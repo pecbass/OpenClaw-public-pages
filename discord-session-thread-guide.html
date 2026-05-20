@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DiscordでOpenClawセッションを切り替えるおすすめ構成</title>
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --paper: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #5865f2;
+      --accent-soft: #eef0ff;
+      --warn: #fff7ed;
+      --warn-line: #fed7aa;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+    article {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 10px 30px rgba(17, 24, 39, .06);
+    }
+    h1, h2, h3 { line-height: 1.35; }
+    h1 { margin-top: 0; font-size: 2rem; }
+    h2 {
+      margin-top: 2.2em;
+      padding-top: 1.2em;
+      border-top: 1px solid var(--line);
+      font-size: 1.35rem;
+    }
+    h3 { margin-top: 1.6em; font-size: 1.05rem; }
+    p { margin: .7em 0; }
+    ul, ol { padding-left: 1.45em; }
+    li { margin: .35em 0; }
+    code {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      padding: .1em .35em;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .92em;
+    }
+    pre {
+      background: var(--code);
+      color: #f9fafb;
+      padding: 16px;
+      border-radius: 12px;
+      overflow-x: auto;
+      line-height: 1.55;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      border: 0;
+      padding: 0;
+    }
+    .lead {
+      font-size: 1.08rem;
+      color: #374151;
+      background: var(--accent-soft);
+      border-left: 5px solid var(--accent);
+      padding: 16px 18px;
+      border-radius: 12px;
+    }
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      background: #fafafa;
+      margin: 16px 0;
+    }
+    .warn {
+      background: var(--warn);
+      border-color: var(--warn-line);
+    }
+    .tag {
+      display: inline-block;
+      font-size: .78rem;
+      color: #ffffff;
+      background: var(--accent);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .muted { color: var(--muted); }
+    .checklist li { list-style: none; margin-left: -1.2em; }
+    .checklist li::before { content: "□ "; color: var(--accent); font-weight: bold; }
+    footer {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    @media (max-width: 640px) {
+      article { padding: 24px 18px; }
+      h1 { font-size: 1.55rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+      <h1>DiscordでOpenClawセッションを切り替えるおすすめ構成</h1>
+      <p class="muted">目的：Discord上で話題・作業単位ごとに会話を分け、OpenClaw / Codex / Claude Code などのセッションを迷子にしない。</p>
+
+      <div class="lead">
+        <strong>結論：</strong> チャンネルをセッションごとに量産するより、<strong>親チャンネルを少数作り、セッションごとはスレッドで分ける</strong>のがおすすめです。
+      </div>
+
+      <h2>1. 推奨構成</h2>
+      <p>Discordサーバー内に、AI作業用のカテゴリを1つ作ります。その中に用途別の親チャンネルを少数だけ置き、実際の会話や作業はスレッドで切ります。</p>
+
+      <pre><code>AI Sessions
+├─ #alice-main
+│  ├─ スレッド: OpenClaw運用相談
+│  ├─ スレッド: ナレッジ管理設計
+│  └─ スレッド: 今日の相談
+│
+├─ #coding-agents
+│  ├─ スレッド: Codexで実装
+│  ├─ スレッド: Claude Codeで調査
+│  └─ スレッド: PRレビュー
+│
+└─ #research
+   ├─ スレッド: AI最新情報
+   ├─ スレッド: 競合調査
+   └─ スレッド: 製品口コミ調査</code></pre>
+
+      <h2>2. なぜスレッド方式がよいか</h2>
+      <ul>
+        <li><strong>会話の文脈が混ざりにくい</strong>：作業単位でスレッドを分離できる。</li>
+        <li><strong>チャンネルが増えすぎない</strong>：Discordサーバーが散らかりにくい。</li>
+        <li><strong>後から探しやすい</strong>：親チャンネル単位で用途が決まっているため、履歴を追いやすい。</li>
+        <li><strong>ACP系の作業と相性がよい</strong>：CodexやClaude Codeなどをスレッド単位の持続セッションとして扱いやすい。</li>
+        <li><strong>権限管理が楽</strong>：細かい権限は親チャンネル側で管理し、スレッドはその中で運用できる。</li>
+      </ul>
+
+      <h2>3. 作成手順</h2>
+
+      <h3>Step 1：カテゴリを作る</h3>
+      <ol>
+        <li>Discordサーバーを開く。</li>
+        <li>左側のチャンネル一覧で右クリック。</li>
+        <li><strong>「カテゴリーを作成」</strong>を選ぶ。</li>
+        <li>カテゴリ名を <code>AI Sessions</code> などにする。</li>
+      </ol>
+
+      <div class="box warn">
+        <strong>注意：</strong> 仕事用サーバーや複数人がいるサーバーでは、最初に権限を確認してください。AIとの会話に業務情報が含まれる可能性があるため、見える人を絞るのが安全です。
+      </div>
+
+      <h3>Step 2：親チャンネルを作る</h3>
+      <p>最初は以下の3つ程度で十分です。</p>
+      <ul>
+        <li><code>#alice-main</code>：通常相談、OpenClaw運用、思考整理</li>
+        <li><code>#coding-agents</code>：Codex / Claude Code / 実装・調査・レビュー</li>
+        <li><code>#research</code>：Web調査、競合調査、口コミ調査、資料集め</li>
+      </ul>
+
+      <p>増やしすぎると管理コストが上がるので、最初は少なめに始めるのがよいです。</p>
+
+      <h3>Step 3：権限を設定する</h3>
+      <p>カテゴリまたは親チャンネル単位で、次の権限を確認します。</p>
+      <ul class="checklist">
+        <li>誰が閲覧できるか</li>
+        <li>誰が投稿できるか</li>
+        <li>Botがメッセージを読めるか</li>
+        <li>Botがメッセージを送れるか</li>
+        <li>Botがスレッドを作成・参加できるか</li>
+        <li>Botが添付ファイルを送れるか</li>
+      </ul>
+
+      <h3>Step 4：セッションごとにスレッドを作る</h3>
+      <p>作業を始めるときは、親チャンネルに直接長く書くのではなく、スレッドを作ってそこで会話します。</p>
+
+      <p>スレッド名の例：</p>
+      <ul>
+        <li><code>2026-05-20_OpenClaw設定相談</code></li>
+        <li><code>Codex_ログ保存機能実装</code></li>
+        <li><code>競合調査_ハンディレコーダー</code></li>
+        <li><code>ナレッジ管理_Obsidian運用</code></li>
+      </ul>
+
+      <h3>Step 5：OpenClaw / ACPセッションをスレッドに紐づける</h3>
+      <p>CodexやClaude CodeなどのコーディングエージェントをDiscordから使う場合は、スレッド単位の持続セッションとして扱うのが自然です。</p>
+
+      <div class="box">
+        <span class="tag">運用ルール</span>
+        <strong>1作業 = 1スレッド</strong>を基本にします。途中で話題が変わったら、新しいスレッドを作る方が履歴が汚れません。
+      </div>
+
+      <h2>4. 命名ルール</h2>
+      <p>後から探せるように、スレッド名には「日付」「用途」「対象」を入れるのがおすすめです。</p>
+
+      <pre><code>YYYY-MM-DD_テーマ
+ツール名_作業内容
+調査_対象名
+実装_機能名
+相談_テーマ名</code></pre>
+
+      <p>例：</p>
+      <ul>
+        <li><code>2026-05-20_OpenClaw_Discord運用</code></li>
+        <li><code>Codex_セッション管理UI調査</code></li>
+        <li><code>Research_AIエージェント安全設計</code></li>
+      </ul>
+
+      <h2>5. 運用ルール</h2>
+      <ul>
+        <li>親チャンネルは「入口」として使い、実作業はスレッドで行う。</li>
+        <li>1つのスレッドで複数テーマを混ぜない。</li>
+        <li>完了したスレッドには最後に「結論」「成果物」「次の行動」を残す。</li>
+        <li>重要な成果物はDiscordだけに置かず、workspace内の <code>04-output/</code> や該当フォルダにも保存する。</li>
+        <li>機密情報、APIキー、パスワードはDiscordに貼らない。</li>
+      </ul>
+
+      <h2>6. 最初に作るならこの構成</h2>
+      <p>迷ったら、まずはこの最小構成で始めるのが安全です。</p>
+
+      <pre><code>AI Sessions
+├─ #alice-main
+├─ #coding-agents
+└─ #research</code></pre>
+
+      <p>この3つで足りなくなったら、後から <code>#automation</code> や <code>#knowledge-base</code> を追加します。最初から細かく作りすぎない方が、運用が安定します。</p>
+
+      <h2>7. チェックリスト</h2>
+      <ul class="checklist">
+        <li><code>AI Sessions</code> カテゴリを作成した</li>
+        <li><code>#alice-main</code> を作成した</li>
+        <li><code>#coding-agents</code> を作成した</li>
+        <li><code>#research</code> を作成した</li>
+        <li>閲覧権限を確認した</li>
+        <li>Botの投稿・スレッド権限を確認した</li>
+        <li>スレッド命名ルールを決めた</li>
+        <li>最初の作業スレッドを1つ作った</li>
+      </ul>
+
+      <h2>8. 推奨ポリシー</h2>
+      <div class="box">
+        <p><strong>基本方針：</strong> チャンネルは用途別、スレッドはセッション別。</p>
+        <p>Discordは「場所」を増やすより、「流れ」を整理する方が使いやすくなります。OpenClawの会話も同じで、親チャンネルを少数に保ち、スレッドで文脈を切る運用が一番現実的です。</p>
+      </div>
+
+      <footer>
+        作成日：2026-05-20 / 保存先：<code>docs/discord-session-thread-guide.html</code>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
