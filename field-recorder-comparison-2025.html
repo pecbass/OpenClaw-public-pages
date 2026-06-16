@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フィールドレコーダー 詳細比較チャート 2025</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3352;
+    --text: #e4e8f5;
+    --text-muted: #7a82a8;
+    --accent: #4f8ef7;
+    --best: #22c55e;
+    --good: #3b82f6;
+    --ok: #f59e0b;
+    --limited: #ef4444;
+    --zoom-color: #e85d27;
+    --sd-color: #1a6eb5;
+    --cat-bg: #0d1120;
+    --sticky-top: 64px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0d1120 0%, #1a1d27 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.03em;
+  }
+  header p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 820px;
+  }
+
+  /* Column widths */
+  col.label-col { width: 200px; }
+  col.data-col  { width: 160px; }
+
+  /* Header row */
+  thead tr.brand-row th {
+    padding: 12px 10px 8px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    position: sticky;
+    top: var(--sticky-top);
+    z-index: 90;
+  }
+  thead tr.brand-row th.zoom-brand {
+    background: linear-gradient(160deg, #1e1208 0%, #2c1808 100%);
+    color: var(--zoom-color);
+    border-color: var(--zoom-color);
+  }
+  thead tr.brand-row th.sd-brand {
+    background: linear-gradient(160deg, #091828 0%, #0c2238 100%);
+    color: var(--sd-color);
+    border-color: var(--sd-color);
+  }
+  thead tr.brand-row th.label-head {
+    background: var(--cat-bg);
+    border-color: transparent;
+    position: sticky;
+    left: 0;
+    z-index: 99;
+  }
+
+  thead tr.product-row th {
+    padding: 10px 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: calc(var(--sticky-top) + 40px);
+    z-index: 89;
+  }
+  thead tr.product-row th.zoom-col {
+    background: #1a0f04;
+  }
+  thead tr.product-row th.sd-col {
+    background: #040d18;
+  }
+  thead tr.product-row th.label-head {
+    background: var(--cat-bg);
+    position: sticky;
+    left: 0;
+    z-index: 98;
+  }
+  .product-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .product-price {
+    font-size: 16px;
+    font-weight: 900;
+    margin: 4px 0 2px;
+  }
+  .zoom-col .product-price { color: var(--zoom-color); }
+  .sd-col   .product-price { color: var(--sd-color);   }
+  .product-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-top: 2px;
+  }
+  .zoom-col .product-tag { background: #3a1a04; color: var(--zoom-color); }
+  .sd-col   .product-tag { background: #04182e; color: var(--sd-color);   }
+
+  /* Category rows */
+  tr.cat-row td {
+    background: var(--cat-bg);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 12px 6px;
+    border-top: 2px solid var(--border);
+  }
+  tr.cat-row td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: var(--cat-bg);
+  }
+
+  /* Data rows */
+  tbody tr.data-row td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tbody tr.data-row:hover td {
+    background: rgba(79, 142, 247, 0.04);
+  }
+
+  td.label-cell {
+    position: sticky;
+    left: 0;
+    z-index: 9;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding-left: 14px;
+    border-right: 1px solid var(--border);
+    min-width: 180px;
+  }
+  tbody tr.data-row:hover td.label-cell {
+    background: #1f2235;
+  }
+
+  td.zoom-cell { background: #130b02; text-align: center; }
+  td.sd-cell   { background: #020c18; text-align: center; }
+  tbody tr.data-row:hover td.zoom-cell { background: #1c1004; }
+  tbody tr.data-row:hover td.sd-cell   { background: #040f22; }
+
+  /* Rating badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .best    { background: rgba(34,197,94,0.15);  color: var(--best);    border: 1px solid rgba(34,197,94,0.35);  }
+  .good    { background: rgba(59,130,246,0.15); color: var(--good);    border: 1px solid rgba(59,130,246,0.35); }
+  .ok      { background: rgba(245,158,11,0.15); color: var(--ok);      border: 1px solid rgba(245,158,11,0.35); }
+  .limited { background: rgba(239,68,68,0.15);  color: var(--limited); border: 1px solid rgba(239,68,68,0.35);  }
+
+  /* Value text */
+  .val      { font-size: 13px; font-weight: 600; color: var(--text); }
+  .val-sub  { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
+  .yes      { color: var(--best);    font-weight: 700; }
+  .no       { color: #555; }
+  .partial  { color: var(--ok);      font-weight: 600; }
+  .na       { color: #444; font-size: 11px; }
+  .highlight-val { color: var(--best); font-weight: 800; font-size: 14px; }
+
+  .icon { font-size: 14px; }
+
+  footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.8;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    header h1 { font-size: 15px; }
+    col.label-col { width: 130px; }
+    col.data-col  { width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>フィールドレコーダー 詳細比較チャート</h1>
+  <p>Zoom F6 / F8n Pro &nbsp;vs&nbsp; Sound Devices MixPre-6 II / MixPre-10 II / 833 &nbsp;—&nbsp; 2025年6月現在</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--best)"></div>カテゴリ最高</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--good)"></div>優秀</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ok)"></div>標準</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--limited)"></div>制限あり</div>
+  </div>
+</header>
+
+<div class="wrap">
+<table>
+<colgroup>
+  <col class="label-col">
+  <col class="data-col"><!-- F6 -->
+  <col class="data-col"><!-- F8n Pro -->
+  <col class="data-col"><!-- MixPre-6 II -->
+  <col class="data-col"><!-- MixPre-10 II -->
+  <col class="data-col"><!-- 833 -->
+</colgroup>
+
+<thead>
+  <tr class="brand-row">
+    <th class="label-head"></th>
+    <th class="zoom-brand" colspan="2">ZOOM</th>
+    <th class="sd-brand" colspan="3">SOUND DEVICES</th>
+  </tr>
+  <tr class="product-row">
+    <th class="label-head"></th>
+
+    <th class="zoom-col">
+      <div class="product-name">F6</div>
+      <div class="product-price">$749.99</div>
+      <span class="product-tag">エントリープロ</span>
+    </th>
+    <th class="zoom-col">
+      <div class="product-name">F8n Pro</div>
+      <div class="product-price">$879</div>
+      <span class="product-tag">ミドルプロ</span>
+    </th>
+    <th class="sd-col">
+      <div class="product-name">MixPre-6 II</div>
+      <div class="product-price">$1,150</div>
+      <span class="product-tag">プロ</span>
+    </th>
+    <th class="sd-col">
+      <div class="product-name">MixPre-10 II</div>
+      <div class="product-price">$1,950</div>
+      <span class="product-tag">ハイエンドプロ</span>
+    </th>
+    <th class="sd-col">
+      <div class="product-name">833</div>
+      <div class="product-price">$5,995</div>
+      <span class="product-tag">放送・映画用</span>
+    </th>
+  </tr>
+</thead>
+
+<tbody>
+
+<!-- ═══════════════════════════════════ AUDIO INPUTS ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">🎙 オーディオ入力</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">XLR入力チャンネル数</td>
+  <td class="zoom-cell"><span class="badge good">6</span></td>
+  <td class="zoom-cell"><span class="badge best">8</span></td>
+  <td class="sd-cell"><span class="badge ok">4</span><span class="val-sub">+3.5mm×2ch</span></td>
+  <td class="sd-cell"><span class="badge best">8</span><span class="val-sub">+3.5mm×2ch</span></td>
+  <td class="sd-cell"><span class="badge good">6</span><span class="val-sub">XLR×3 + TA3×3</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">コネクタ形状</td>
+  <td class="zoom-cell"><span class="val">XLR/TRS コンボ</span></td>
+  <td class="zoom-cell"><span class="val">XLR/TRS コンボ</span></td>
+  <td class="sd-cell"><span class="val">XLR-1/4" コンボ</span><span class="val-sub">+ 3.5mm aux×1</span></td>
+  <td class="sd-cell"><span class="val">XLR-1/4" コンボ</span><span class="val-sub">+ 3.5mm aux×1</span></td>
+  <td class="sd-cell"><span class="val">XLR×3 + TA3×3</span><span class="val-sub">ロックコネクタ</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">EIN（等価入力雑音）</td>
+  <td class="zoom-cell"><span class="val">−127 dBu</span></td>
+  <td class="zoom-cell"><span class="val">−127 dBu</span></td>
+  <td class="sd-cell"><span class="val highlight-val">−130 dBV</span><span class="val-sub">（−128 dBu）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">−130 dBV</span><span class="val-sub">（−128 dBu）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">−131 dBV</span><span class="val-sub">（−129 dBu）業界最低</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">最大マイクゲイン</td>
+  <td class="zoom-cell"><span class="val">+75 dB</span></td>
+  <td class="zoom-cell"><span class="val">+75 dB</span></td>
+  <td class="sd-cell"><span class="val">+76 dB</span></td>
+  <td class="sd-cell"><span class="val">+76 dB</span></td>
+  <td class="sd-cell"><span class="val">+76 dB</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ファンタム電源</td>
+  <td class="zoom-cell"><span class="val">24V / 48V</span><span class="val-sub">各チャンネル独立</span></td>
+  <td class="zoom-cell"><span class="val">24V / 48V</span><span class="val-sub">各チャンネル独立</span></td>
+  <td class="sd-cell"><span class="val">48V</span><span class="val-sub">各チャンネル独立</span></td>
+  <td class="sd-cell"><span class="val">48V</span><span class="val-sub">各チャンネル独立</span></td>
+  <td class="sd-cell"><span class="val">12V / 48V</span><span class="val-sub">各チャンネル独立</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">プリアンプ種別</td>
+  <td class="zoom-cell"><span class="val">Zoom プロ grade</span></td>
+  <td class="zoom-cell"><span class="val">Zoom プロ grade</span><span class="val-sub">デュアルA/D</span></td>
+  <td class="sd-cell"><span class="val highlight-val">Kashmir™</span><span class="val-sub">超低ノイズ設計</span></td>
+  <td class="sd-cell"><span class="val highlight-val">Kashmir™</span><span class="val-sub">超低ノイズ設計</span></td>
+  <td class="sd-cell"><span class="val highlight-val">Class-A</span><span class="val-sub">業界最高クラス</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ RECORDING ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">⏺ 録音スペック</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">32-bit float 対応</td>
+  <td class="zoom-cell"><span class="yes">✓ 対応</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 対応</span></td>
+  <td class="sd-cell"><span class="yes">✓ 対応</span></td>
+  <td class="sd-cell"><span class="yes">✓ 対応</span></td>
+  <td class="sd-cell"><span class="yes">✓ 対応</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">32-bit float 最大サンプルレート</td>
+  <td class="zoom-cell"><span class="badge ok">96 kHz</span></td>
+  <td class="zoom-cell"><span class="badge best">192 kHz</span></td>
+  <td class="sd-cell"><span class="badge best">192 kHz</span></td>
+  <td class="sd-cell"><span class="badge best">192 kHz</span></td>
+  <td class="sd-cell"><span class="badge best">192 kHz</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">24-bit 最大サンプルレート</td>
+  <td class="zoom-cell"><span class="val">192 kHz</span></td>
+  <td class="zoom-cell"><span class="val">192 kHz</span></td>
+  <td class="sd-cell"><span class="val">192 kHz</span></td>
+  <td class="sd-cell"><span class="val">192 kHz</span></td>
+  <td class="sd-cell"><span class="val">192 kHz</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ダイナミックレンジ</td>
+  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="sd-cell"><span class="val highlight-val">142 dB min</span><span class="val-sub">（A-weighted）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">142 dB min</span><span class="val-sub">（A-weighted）</span></td>
+  <td class="sd-cell"><span class="na">非公開</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">同時録音トラック数</td>
+  <td class="zoom-cell"><span class="badge best">14</span><span class="val-sub">6ch×2 + ステレオMix</span></td>
+  <td class="zoom-cell"><span class="badge good">10</span><span class="val-sub">8ch + ステレオMix</span></td>
+  <td class="sd-cell"><span class="badge ok">8</span><span class="val-sub">6ch + ステレオMix</span></td>
+  <td class="sd-cell"><span class="badge best">12</span><span class="val-sub">10ch + ステレオMix</span></td>
+  <td class="sd-cell"><span class="badge best">12</span><span class="val-sub">最大16tr（+4 Plugin）</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">デュアルA/Dコンバーター</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="val">32-bit float内蔵</span></td>
+  <td class="sd-cell"><span class="val">32-bit float内蔵</span></td>
+  <td class="sd-cell"><span class="val">32-bit float内蔵</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ファイルフォーマット</td>
+  <td class="zoom-cell"><span class="val">BWF WAV / iXML</span></td>
+  <td class="zoom-cell"><span class="val">BWF WAV / iXML</span></td>
+  <td class="sd-cell"><span class="val">BWF WAV / iXML</span></td>
+  <td class="sd-cell"><span class="val">BWF WAV / iXML</span></td>
+  <td class="sd-cell"><span class="val">BWF WAV / iXML</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">THD+N</td>
+  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="sd-cell"><span class="val">0.005% max</span></td>
+  <td class="sd-cell"><span class="val">0.005% max</span></td>
+  <td class="sd-cell"><span class="na">—</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">周波数特性</td>
+  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="sd-cell"><span class="val">10 Hz–80 kHz</span><span class="val-sub">±0.5 dB @ 192kHz</span></td>
+  <td class="sd-cell"><span class="val">10 Hz–80 kHz</span><span class="val-sub">±0.5 dB @ 192kHz</span></td>
+  <td class="sd-cell"><span class="na">—</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ OUTPUTS ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">🔊 出力・インターフェース</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">バランスアナログ出力</td>
+  <td class="zoom-cell"><span class="val">3.5mm L/R</span></td>
+  <td class="zoom-cell"><span class="val">3系統</span><span class="val-sub">（TA3 / 3.5mm）</span></td>
+  <td class="sd-cell"><span class="val">TA3 ×2</span><span class="val-sub">+ 3.5mmステレオ</span></td>
+  <td class="sd-cell"><span class="val highlight-val">TA3 ×2 +18 dBu</span><span class="val-sub">+ 3.5mmステレオ</span></td>
+  <td class="sd-cell"><span class="val highlight-val">6系統アナログ出力</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ヘッドフォン出力</td>
+  <td class="zoom-cell"><span class="yes">✓ 3.5mm</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 3.5mm</span></td>
+  <td class="sd-cell"><span class="yes">✓ 3.5mm</span></td>
+  <td class="sd-cell"><span class="yes">✓ 3.5mm</span></td>
+  <td class="sd-cell"><span class="yes">✓ 3.5mm</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">USB オーディオインターフェース</td>
+  <td class="zoom-cell"><span class="val">6-in / 4-out</span><span class="val-sub">24-bit / 96 kHz</span></td>
+  <td class="zoom-cell"><span class="val">8-in / 4-out</span><span class="val-sub">32-bit float / 96 kHz</span></td>
+  <td class="sd-cell"><span class="val">8-in / 4-out</span><span class="val-sub">32-bit float / 96 kHz</span><span class="val-sub">USB-C (Class Compliant)</span></td>
+  <td class="sd-cell"><span class="val">12-in / 4-out</span><span class="val-sub">32-bit float対応</span></td>
+  <td class="sd-cell"><span class="na">—</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ TIMECODE ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">🕐 タイムコード・同期</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">タイムコード I/O</td>
+  <td class="zoom-cell"><span class="val">3.5mm ステレオ mini</span><span class="val-sub">TC IN/OUT</span></td>
+  <td class="zoom-cell"><span class="badge best">BNC専用端子</span><span class="val-sub">TC IN / TC OUT</span></td>
+  <td class="sd-cell"><span class="val">Aux In / Stereo Out 兼用</span><span class="val-sub">（LTC IN/OUT）</span></td>
+  <td class="sd-cell"><span class="badge best">専用 TC 端子</span><span class="val-sub">TC録画トリガー対応</span></td>
+  <td class="sd-cell"><span class="badge best">超精度 TCXO</span><span class="val-sub">専用BNC</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">TC 精度（TCXO）</td>
+  <td class="zoom-cell"><span class="val">±0.2 ppm</span><span class="val-sub">電源ON/OFF時</span></td>
+  <td class="zoom-cell"><span class="val">±0.2 ppm</span><span class="val-sub">電源ON/OFF時</span></td>
+  <td class="sd-cell"><span class="val">±0.2 ppm</span><span class="val-sub">（0.5 fr / 24 hr）</span></td>
+  <td class="sd-cell"><span class="val">±0.2 ppm</span></td>
+  <td class="sd-cell"><span class="val highlight-val">超精度 TCXO</span><span class="val-sub">（Scorpio同等）</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">電源OFF時 TC 保持</td>
+  <td class="zoom-cell"><span class="val">ON/OFF 維持</span></td>
+  <td class="zoom-cell"><span class="val">ON/OFF 維持</span></td>
+  <td class="sd-cell"><span class="val highlight-val">最大 4 時間</span></td>
+  <td class="sd-cell"><span class="val highlight-val">最大 4 時間</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">Jam Sync / Drop Frame</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ SIGNAL PROCESSING ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">⚙️ 信号処理・ルーティング</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">オートミックス（自動レベル）</td>
+  <td class="zoom-cell"><span class="yes">✓ Zoom AutoMix</span></td>
+  <td class="zoom-cell"><span class="yes">✓ Zoom AutoMix</span></td>
+  <td class="sd-cell"><span class="partial">オプション</span><span class="val-sub">Dugan Plugin</span></td>
+  <td class="sd-cell"><span class="partial">オプション</span><span class="val-sub">Dugan Plugin</span></td>
+  <td class="sd-cell"><span class="badge best">Dugan 標準搭載</span><span class="val-sub">8ch / 2グループ同時</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ルーティング（全入力→全出力）</td>
+  <td class="zoom-cell"><span class="partial">基本ルーティング</span></td>
+  <td class="zoom-cell"><span class="yes">✓ フレキシブル</span><span class="val-sub">全入力→全出力</span></td>
+  <td class="sd-cell"><span class="partial">限定的</span></td>
+  <td class="sd-cell"><span class="partial">限定的</span></td>
+  <td class="sd-cell"><span class="badge best">完全フレキシブル</span><span class="val-sub">任意入力→任意トラック</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">EQ（チャンネル別）</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="badge best">3バンドEQ</span><span class="val-sub">Pre/Postフェーダー選択</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">リミッター</td>
+  <td class="zoom-cell"><span class="val">ルックアヘッド</span><span class="val-sub">ハイブリッド（24-bit時）</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="badge best">アナログ＋デジタル</span><span class="val-sub">閾値/比率/リリース調整可</span></td>
+  <td class="sd-cell"><span class="badge best">アナログ＋デジタル</span><span class="val-sub">閾値/比率/リリース調整可</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ハイパスフィルター</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">フェイズ反転</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">M-S デコード</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">入力/出力ディレイ</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">アンビソニクス (A→B デコード)</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="partial">プラグイン</span></td>
+  <td class="sd-cell"><span class="badge best">✓ 2 B-Format同時</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ノイズリダクション</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="partial">NoiseAssist Plugin</span></td>
+  <td class="sd-cell"><span class="partial">NoiseAssist Plugin</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ STORAGE ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">💾 ストレージ</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">SDカードスロット</td>
+  <td class="zoom-cell"><span class="val">1スロット</span><span class="val-sub">最大512GB</span></td>
+  <td class="zoom-cell"><span class="val">2スロット</span><span class="val-sub">最大1TB</span></td>
+  <td class="sd-cell"><span class="val">1スロット</span><span class="val-sub">+ USB バックアップ</span></td>
+  <td class="sd-cell"><span class="val">1スロット</span><span class="val-sub">+ USB バックアップ</span></td>
+  <td class="sd-cell"><span class="badge best">2スロット</span><span class="val-sub">+ 内蔵256GB SSD</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">内蔵SSD</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="badge best">256 GB</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">同時メディア録音</td>
+  <td class="zoom-cell"><span class="val">1メディア</span></td>
+  <td class="zoom-cell"><span class="val">2メディア</span></td>
+  <td class="sd-cell"><span class="val">SD + USB</span></td>
+  <td class="sd-cell"><span class="val">SD + USB</span></td>
+  <td class="sd-cell"><span class="badge best">3メディア同時</span><span class="val-sub">SSD + SD×2</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">プリロール（録音前バッファ）</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="val">10秒</span></td>
+  <td class="sd-cell"><span class="val highlight-val">拡張プリロール</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">USB自動バックアップ</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="yes">✓ オートコピー</span></td>
+  <td class="sd-cell"><span class="yes">✓ オートコピー</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ POWER ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">🔋 電源</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">単3乾電池（AA）</td>
+  <td class="zoom-cell"><span class="yes">✓ 4本</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 8本</span></td>
+  <td class="sd-cell"><span class="yes">✓ 4本 / 8本</span></td>
+  <td class="sd-cell"><span class="yes">✓ 8本</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">Lマウントバッテリー</td>
+  <td class="zoom-cell"><span class="yes">✓ Sony L-Series</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="partial">オプション</span></td>
+  <td class="sd-cell"><span class="partial">オプション</span></td>
+  <td class="sd-cell"><span class="badge best">デュアルL-Mount</span><span class="val-sub">充電・給電 両対応</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">DC外部電源</td>
+  <td class="zoom-cell"><span class="val">AC アダプタ</span></td>
+  <td class="zoom-cell"><span class="val">9–18V DC</span><span class="val-sub">12V ACアダプタ</span></td>
+  <td class="sd-cell"><span class="val">ACアダプタ（15W）</span></td>
+  <td class="sd-cell"><span class="val">4ピン Hirose</span><span class="val-sub">（XL-WPH3 45W）</span></td>
+  <td class="sd-cell"><span class="val">4ピン Hirose</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">USB-C バスパワー</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">推定バッテリー動作時間（AA）</td>
+  <td class="zoom-cell"><span class="val">最大16.5時間</span><span class="val-sub">（4x AA リチウム）</span></td>
+  <td class="zoom-cell"><span class="val">約5〜8時間</span><span class="val-sub">（8x AA）</span></td>
+  <td class="sd-cell"><span class="val">約6時間</span><span class="val-sub">（8x AA）</span></td>
+  <td class="sd-cell"><span class="val">約5時間</span><span class="val-sub">（8x AA）</span></td>
+  <td class="sd-cell"><span class="na">AA非対応</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ REMOTE / WIRELESS ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">📡 リモート・ワイヤレス</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">Bluetooth（アプリ連携）</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="yes">✓ BLE</span><span class="val-sub">Wingman App</span></td>
+  <td class="sd-cell"><span class="yes">✓ BLE</span><span class="val-sub">Wingman App</span></td>
+  <td class="sd-cell"><span class="yes">✓</span><span class="val-sub">SD-Remote App</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">iOS / Android アプリ制御</td>
+  <td class="zoom-cell"><span class="yes">✓ Zoom F Control</span></td>
+  <td class="zoom-cell"><span class="yes">✓ Zoom F8 Control</span></td>
+  <td class="sd-cell"><span class="yes">✓ Wingman</span></td>
+  <td class="sd-cell"><span class="yes">✓ Wingman</span></td>
+  <td class="sd-cell"><span class="yes">✓ SD-Remote</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ワイヤレス受信機拡張</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="badge best">SL-2 SuperSlot</span><span class="val-sub">最大16ch ワイヤレス</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">USB コントロールサーフェス</td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="no">—</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ DISPLAY / UI ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">🖥 ディスプレイ・UI</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">ディスプレイ</td>
+  <td class="zoom-cell"><span class="val">小型 OLED</span></td>
+  <td class="zoom-cell"><span class="val">2.4" カラー液晶</span><span class="val-sub">モノクロモード対応</span></td>
+  <td class="sd-cell"><span class="val">タッチスクリーン</span><span class="val-sub">日光下可読</span></td>
+  <td class="sd-cell"><span class="val">タッチスクリーン</span><span class="val-sub">日光下可読</span></td>
+  <td class="sd-cell"><span class="val">タッチスクリーン</span><span class="val-sub">日光下可読</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">チャンネル別ゲインノブ</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓ + フェーダー</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">LEDレベルメーター（チャンネル別）</td>
+  <td class="zoom-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 6-seg</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓ + PFLスイッチ</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ PHYSICAL ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">📐 本体・物理スペック</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">重量</td>
+  <td class="zoom-cell"><span class="badge best">530 g</span></td>
+  <td class="zoom-cell"><span class="badge ok">約 1,000 g</span></td>
+  <td class="sd-cell"><span class="badge good">約 600 g</span><span class="val-sub">（推定）</span></td>
+  <td class="sd-cell"><span class="badge ok">910 g</span></td>
+  <td class="sd-cell"><span class="na">—</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">外形寸法（W×D×H）</td>
+  <td class="zoom-cell"><span class="val">143×83×46 mm</span></td>
+  <td class="zoom-cell"><span class="val">178×140×53 mm</span></td>
+  <td class="sd-cell"><span class="val">約 175×87×45 mm</span></td>
+  <td class="sd-cell"><span class="val">非公開</span></td>
+  <td class="sd-cell"><span class="val">非公開</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">フォームファクター</td>
+  <td class="zoom-cell"><span class="val">コンパクト縦型</span></td>
+  <td class="zoom-cell"><span class="val">横型（スラブ）</span></td>
+  <td class="sd-cell"><span class="val">縦型ポータブル</span></td>
+  <td class="sd-cell"><span class="val">縦型ポータブル</span></td>
+  <td class="sd-cell"><span class="val">横型バッグレコーダー</span></td>
+</tr>
+
+<!-- ═══════════════════════════════════ PRICE / VALUE ═══════════════════════════════════ -->
+<tr class="cat-row"><td colspan="6">💰 価格・コストパフォーマンス</td></tr>
+
+<tr class="data-row">
+  <td class="label-cell">参考価格（USD）</td>
+  <td class="zoom-cell"><span class="badge best">$749.99</span></td>
+  <td class="zoom-cell"><span class="badge good">$879</span></td>
+  <td class="sd-cell"><span class="badge ok">$1,150</span></td>
+  <td class="sd-cell"><span class="badge limited">$1,950</span></td>
+  <td class="sd-cell"><span class="badge limited">$5,995</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">F8n Pro 比較（価格差）</td>
+  <td class="zoom-cell"><span class="val">−$129</span></td>
+  <td class="zoom-cell"><span class="val">基準製品</span></td>
+  <td class="sd-cell"><span class="val">+$271</span></td>
+  <td class="sd-cell"><span class="val">+$1,071</span></td>
+  <td class="sd-cell"><span class="val">+$5,116</span></td>
+</tr>
+
+<tr class="data-row">
+  <td class="label-cell">ターゲットユーザー</td>
+  <td class="zoom-cell"><span class="val" style="font-size:11px">軽量重視<br>ドキュメント<br>フィールド録音</span></td>
+  <td class="zoom-cell"><span class="val" style="font-size:11px">映像制作<br>多人数取材<br>ロケ録音</span></td>
+  <td class="sd-cell"><span class="val" style="font-size:11px">プロ映像<br>音楽録音<br>小規模制作</span></td>
+  <td class="sd-cell"><span class="val" style="font-size:11px">中〜大規模制作<br>ドラマ・CM<br>音楽制作</span></td>
+  <td class="sd-cell"><span class="val" style="font-size:11px">放送・映画<br>ラン&amp;ガン<br>ハイエンドバッグ運用</span></td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<footer>
+  <strong>出典 / Sources：</strong><br>
+  <a href="https://zoomcorp.com/en/us/field-recorders/field-recorders/f8n-pro/">Zoom F8n Pro 公式</a> &nbsp;|&nbsp;
+  <a href="https://zoomcorp.com/en/us/field-recorders/field-recorders/f6/">Zoom F6 公式</a> &nbsp;|&nbsp;
+  <a href="https://www.sounddevices.com/mixpre-6-ii-specifications/">MixPre-6 II スペック</a> &nbsp;|&nbsp;
+  <a href="https://www.sounddevices.com/mixpre-10-ii-specifications/">MixPre-10 II スペック</a> &nbsp;|&nbsp;
+  <a href="https://www.sounddevices.com/833-specifications-3/">Sound Devices 833 スペック</a> &nbsp;|&nbsp;
+  <a href="https://www.sweetwater.com/store/detail/F8NPro--zoom-f8n-pro-multitrack-field-recorder">Sweetwater F8n Pro</a> &nbsp;|&nbsp;
+  <a href="https://www.creativefieldrecording.com/2025/04/30/32-bit-float-field-recorders/">Creative Field Recording 比較 (2025)</a><br><br>
+  価格は2025年6月現在の参考価格（USD）。仕様は各社公式情報に基づく。一部スペックは「—」（未公開）。
+</footer>
+
+</body>
+</html>
