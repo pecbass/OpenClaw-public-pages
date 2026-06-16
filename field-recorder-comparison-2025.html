@@ -323,7 +323,7 @@
 
 <tr class="data-row">
   <td class="label-cell">コネクタ形状</td>
-  <td class="zoom-cell"><span class="val">XLR/TRS コンボ</span></td>
+  <td class="zoom-cell"><span class="val">XLR 専用</span><span class="val-sub">ロック式 Neutrik</span></td>
   <td class="zoom-cell"><span class="val">XLR/TRS コンボ</span></td>
   <td class="sd-cell"><span class="val">XLR-1/4" コンボ</span><span class="val-sub">+ 3.5mm aux×1</span></td>
   <td class="sd-cell"><span class="val">XLR-1/4" コンボ</span><span class="val-sub">+ 3.5mm aux×1</span></td>
@@ -354,7 +354,7 @@
   <td class="zoom-cell"><span class="val">24V / 48V</span><span class="val-sub">各チャンネル独立</span></td>
   <td class="sd-cell"><span class="val">48V</span><span class="val-sub">各チャンネル独立</span></td>
   <td class="sd-cell"><span class="val">48V</span><span class="val-sub">各チャンネル独立</span></td>
-  <td class="sd-cell"><span class="val">12V / 48V</span><span class="val-sub">各チャンネル独立</span></td>
+  <td class="sd-cell"><span class="val">48V</span><span class="val-sub">各ch独立 / スレートマイクのみ12V</span></td>
 </tr>
 
 <tr class="data-row">
@@ -398,11 +398,11 @@
 
 <tr class="data-row">
   <td class="label-cell">ダイナミックレンジ</td>
-  <td class="zoom-cell"><span class="na">—</span></td>
-  <td class="zoom-cell"><span class="na">—</span></td>
-  <td class="sd-cell"><span class="val highlight-val">142 dB min</span><span class="val-sub">（A-weighted）</span></td>
-  <td class="sd-cell"><span class="val highlight-val">142 dB min</span><span class="val-sub">（A-weighted）</span></td>
-  <td class="sd-cell"><span class="na">非公開</span></td>
+  <td class="zoom-cell"><span class="val-sub">公称値なし<br>（デュアルA/D方式）</span></td>
+  <td class="zoom-cell"><span class="val-sub">公称値なし<br>（デュアルA/D方式）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">142 dB min</span><span class="val-sub">（A-weighted, ADC）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">142 dB min</span><span class="val-sub">（A-weighted, ADC）</span></td>
+  <td class="sd-cell"><span class="val">120 dB typ</span><span class="val-sub">（A/D, A-weighted）</span></td>
 </tr>
 
 <tr class="data-row">
@@ -415,12 +415,12 @@
 </tr>
 
 <tr class="data-row">
-  <td class="label-cell">デュアルA/Dコンバーター</td>
-  <td class="zoom-cell"><span class="yes">✓</span></td>
-  <td class="zoom-cell"><span class="yes">✓</span></td>
-  <td class="sd-cell"><span class="val">32-bit float内蔵</span></td>
-  <td class="sd-cell"><span class="val">32-bit float内蔵</span></td>
-  <td class="sd-cell"><span class="val">32-bit float内蔵</span></td>
+  <td class="label-cell">A/D方式（多段/デュアル）</td>
+  <td class="zoom-cell"><span class="yes">✓ デュアルA/D</span></td>
+  <td class="zoom-cell"><span class="yes">✓ デュアルA/D</span></td>
+  <td class="sd-cell"><span class="yes">✓ マルチステージA/D</span></td>
+  <td class="sd-cell"><span class="yes">✓ マルチステージA/D</span></td>
+  <td class="sd-cell"><span class="val">単一 32-bit A/D</span><span class="val-sub">（120dB / 多段なし）</span></td>
 </tr>
 
 <tr class="data-row">
@@ -438,16 +438,16 @@
   <td class="zoom-cell"><span class="na">—</span></td>
   <td class="sd-cell"><span class="val">0.005% max</span></td>
   <td class="sd-cell"><span class="val">0.005% max</span></td>
-  <td class="sd-cell"><span class="na">—</span></td>
+  <td class="sd-cell"><span class="val">0.005% max</span></td>
 </tr>
 
 <tr class="data-row">
   <td class="label-cell">周波数特性</td>
   <td class="zoom-cell"><span class="na">—</span></td>
-  <td class="zoom-cell"><span class="na">—</span></td>
+  <td class="zoom-cell"><span class="val">20 Hz–60 kHz</span><span class="val-sub">+0.5/−1 dB @ 192kHz</span></td>
   <td class="sd-cell"><span class="val">10 Hz–80 kHz</span><span class="val-sub">±0.5 dB @ 192kHz</span></td>
   <td class="sd-cell"><span class="val">10 Hz–80 kHz</span><span class="val-sub">±0.5 dB @ 192kHz</span></td>
-  <td class="sd-cell"><span class="na">—</span></td>
+  <td class="sd-cell"><span class="val">10 Hz–80 kHz</span><span class="val-sub">±0.5 dB @ 192kHz</span></td>
 </tr>
 
 <!-- ═══════════════════════════════════ OUTPUTS ═══════════════════════════════════ -->
@@ -455,20 +455,20 @@
 
 <tr class="data-row">
   <td class="label-cell">バランスアナログ出力</td>
-  <td class="zoom-cell"><span class="val">3.5mm L/R</span></td>
-  <td class="zoom-cell"><span class="val">3系統</span><span class="val-sub">（TA3 / 3.5mm）</span></td>
-  <td class="sd-cell"><span class="val">TA3 ×2</span><span class="val-sub">+ 3.5mmステレオ</span></td>
-  <td class="sd-cell"><span class="val highlight-val">TA3 ×2 +18 dBu</span><span class="val-sub">+ 3.5mmステレオ</span></td>
-  <td class="sd-cell"><span class="val highlight-val">6系統アナログ出力</span></td>
+  <td class="zoom-cell"><span class="val">なし</span><span class="val-sub">3.5mm L/R（アンバランス）のみ</span></td>
+  <td class="zoom-cell"><span class="val">MAIN OUT: TA3 バランス</span><span class="val-sub">+ SUB OUT 3.5mm（アンバランス）</span></td>
+  <td class="sd-cell"><span class="val">なし</span><span class="val-sub">3.5mm ステレオ（アンバランス）のみ</span></td>
+  <td class="sd-cell"><span class="val highlight-val">L/R: TA3 バランス +18 dBu</span><span class="val-sub">+ X1/X2 3.5mm（アンバランス）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">6系統</span><span class="val-sub">XLR L/R + TA3 X1/X2 バランス<br>+ 3.5mm X3/X4 アンバランス</span></td>
 </tr>
 
 <tr class="data-row">
   <td class="label-cell">ヘッドフォン出力</td>
   <td class="zoom-cell"><span class="yes">✓ 3.5mm</span></td>
-  <td class="zoom-cell"><span class="yes">✓ 3.5mm</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 1/4″</span><span class="val-sub">（6.3mm ステレオ）</span></td>
   <td class="sd-cell"><span class="yes">✓ 3.5mm</span></td>
   <td class="sd-cell"><span class="yes">✓ 3.5mm</span></td>
-  <td class="sd-cell"><span class="yes">✓ 3.5mm</span></td>
+  <td class="sd-cell"><span class="yes">✓ 1/4″ + 3.5mm + TA5</span></td>
 </tr>
 
 <tr class="data-row">
@@ -488,8 +488,8 @@
   <td class="zoom-cell"><span class="val">3.5mm ステレオ mini</span><span class="val-sub">TC IN/OUT</span></td>
   <td class="zoom-cell"><span class="badge best">BNC専用端子</span><span class="val-sub">TC IN / TC OUT</span></td>
   <td class="sd-cell"><span class="val">Aux In / Stereo Out 兼用</span><span class="val-sub">（LTC IN/OUT）</span></td>
-  <td class="sd-cell"><span class="badge best">専用 TC 端子</span><span class="val-sub">TC録画トリガー対応</span></td>
-  <td class="sd-cell"><span class="badge best">超精度 TCXO</span><span class="val-sub">専用BNC</span></td>
+  <td class="sd-cell"><span class="badge best">BNC IN/OUT</span><span class="val-sub">TC/ワードクロック切替</span></td>
+  <td class="sd-cell"><span class="badge best">BNC IN/OUT</span><span class="val-sub">+ ワードクロック I/O</span></td>
 </tr>
 
 <tr class="data-row">
@@ -497,8 +497,8 @@
   <td class="zoom-cell"><span class="val">±0.2 ppm</span><span class="val-sub">電源ON/OFF時</span></td>
   <td class="zoom-cell"><span class="val">±0.2 ppm</span><span class="val-sub">電源ON/OFF時</span></td>
   <td class="sd-cell"><span class="val">±0.2 ppm</span><span class="val-sub">（0.5 fr / 24 hr）</span></td>
-  <td class="sd-cell"><span class="val">±0.2 ppm</span></td>
-  <td class="sd-cell"><span class="val highlight-val">超精度 TCXO</span><span class="val-sub">（Scorpio同等）</span></td>
+  <td class="sd-cell"><span class="val">±0.2 ppm</span><span class="val-sub">（0.5 fr / 24 hr）</span></td>
+  <td class="sd-cell"><span class="val highlight-val">±0.1 ppm</span><span class="val-sub">（0.25 fr / 24 hr）最高精度</span></td>
 </tr>
 
 <tr class="data-row">
@@ -526,9 +526,9 @@
   <td class="label-cell">オートミックス（自動レベル）</td>
   <td class="zoom-cell"><span class="yes">✓ Zoom AutoMix</span></td>
   <td class="zoom-cell"><span class="yes">✓ Zoom AutoMix</span></td>
-  <td class="sd-cell"><span class="partial">オプション</span><span class="val-sub">Dugan Plugin</span></td>
-  <td class="sd-cell"><span class="partial">オプション</span><span class="val-sub">Dugan Plugin</span></td>
-  <td class="sd-cell"><span class="badge best">Dugan 標準搭載</span><span class="val-sub">8ch / 2グループ同時</span></td>
+  <td class="sd-cell"><span class="yes">✓ MixAssist</span><span class="val-sub">内蔵（Dugan非対応）</span></td>
+  <td class="sd-cell"><span class="yes">✓ MixAssist</span><span class="val-sub">内蔵（Dugan非対応）</span></td>
+  <td class="sd-cell"><span class="badge best">Dugan + MixAssist</span><span class="val-sub">各8ch / 2グループ同時</span></td>
 </tr>
 
 <tr class="data-row">
@@ -596,11 +596,11 @@
 
 <tr class="data-row">
   <td class="label-cell">アンビソニクス (A→B デコード)</td>
-  <td class="zoom-cell"><span class="yes">✓</span></td>
-  <td class="zoom-cell"><span class="yes">✓</span></td>
-  <td class="sd-cell"><span class="partial">プラグイン</span></td>
-  <td class="sd-cell"><span class="badge best">✓ 2 B-Format同時</span></td>
-  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 標準</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 標準</span></td>
+  <td class="sd-cell"><span class="partial">✓ プラグイン</span><span class="val-sub">A→B, ~192kHz</span></td>
+  <td class="sd-cell"><span class="partial">✓ プラグイン</span><span class="val-sub">A→B, ~192kHz</span></td>
+  <td class="sd-cell"><span class="no">—</span><span class="val-sub">プラグイン非対応</span></td>
 </tr>
 
 <tr class="data-row">
@@ -619,8 +619,8 @@
   <td class="label-cell">SDカードスロット</td>
   <td class="zoom-cell"><span class="val">1スロット</span><span class="val-sub">最大1TB</span></td>
   <td class="zoom-cell"><span class="val">2スロット</span><span class="val-sub">最大1TB</span></td>
-  <td class="sd-cell"><span class="val">1スロット</span><span class="val-sub">+ USB バックアップ</span></td>
-  <td class="sd-cell"><span class="val">1スロット</span><span class="val-sub">+ USB バックアップ</span></td>
+  <td class="sd-cell"><span class="val">1スロット</span><span class="val-sub">最大512GB + USBバックアップ</span></td>
+  <td class="sd-cell"><span class="val">1スロット</span><span class="val-sub">最大512GB + USBバックアップ</span></td>
   <td class="sd-cell"><span class="badge best">2スロット</span><span class="val-sub">+ 内蔵256GB SSD</span></td>
 </tr>
 
@@ -645,9 +645,9 @@
 <tr class="data-row">
   <td class="label-cell">プリロール（録音前バッファ）</td>
   <td class="zoom-cell"><span class="yes">✓</span></td>
-  <td class="zoom-cell"><span class="yes">✓</span></td>
-  <td class="sd-cell"><span class="val">10秒</span></td>
-  <td class="sd-cell"><span class="val highlight-val">拡張プリロール</span></td>
+  <td class="zoom-cell"><span class="yes">✓ 6秒</span></td>
+  <td class="sd-cell"><span class="yes">✓ 拡張プリロール</span></td>
+  <td class="sd-cell"><span class="yes">✓ 拡張プリロール</span></td>
   <td class="sd-cell"><span class="yes">✓</span></td>
 </tr>
 
@@ -655,9 +655,9 @@
   <td class="label-cell">USB自動バックアップ</td>
   <td class="zoom-cell"><span class="no">—</span></td>
   <td class="zoom-cell"><span class="no">—</span></td>
-  <td class="sd-cell"><span class="yes">✓ オートコピー</span></td>
-  <td class="sd-cell"><span class="yes">✓ オートコピー</span></td>
-  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓ オートコピー</span><span class="val-sub">USBサムドライブ</span></td>
+  <td class="sd-cell"><span class="yes">✓ オートコピー</span><span class="val-sub">USBサムドライブ</span></td>
+  <td class="sd-cell"><span class="val">—</span><span class="val-sub">3メディア同時録音で代替</span></td>
 </tr>
 
 <!-- ═══════════════════════════════════ POWER ═══════════════════════════════════ -->
@@ -687,7 +687,7 @@
   <td class="zoom-cell"><span class="val">9–18V DC</span><span class="val-sub">12V ACアダプタ</span></td>
   <td class="sd-cell"><span class="val">ACアダプタ（15W）</span></td>
   <td class="sd-cell"><span class="val">4ピン Hirose</span><span class="val-sub">（XL-WPH3 45W）</span></td>
-  <td class="sd-cell"><span class="val">4ピン Hirose</span></td>
+  <td class="sd-cell"><span class="val">10–18V</span><span class="val-sub">locking TA4（スマートバッテリー対応）</span></td>
 </tr>
 
 <tr class="data-row">
@@ -701,10 +701,10 @@
 
 <tr class="data-row">
   <td class="label-cell">推定バッテリー動作時間（AA）</td>
-  <td class="zoom-cell"><span class="val">最大16.5時間</span><span class="val-sub">（4x AA リチウム）</span></td>
-  <td class="zoom-cell"><span class="val">約5〜8時間</span><span class="val-sub">（8x AA）</span></td>
-  <td class="sd-cell"><span class="val">約6時間</span><span class="val-sub">（8x AA）</span></td>
-  <td class="sd-cell"><span class="val">約5時間</span><span class="val-sub">（8x AA）</span></td>
+  <td class="zoom-cell"><span class="val">4.5〜16.5時間</span><span class="val-sub">（4x AA, 用途で変動）</span></td>
+  <td class="zoom-cell"><span class="val">4.5〜9.5時間</span><span class="val-sub">（8x AA, 8ch時 用途で変動）</span></td>
+  <td class="sd-cell"><span class="na">公称値なし</span><span class="val-sub">（8x AA / SRで変動）</span></td>
+  <td class="sd-cell"><span class="na">公称値なし</span><span class="val-sub">（8x AA / SRで変動）</span></td>
   <td class="sd-cell"><span class="na">AA非対応</span></td>
 </tr>
 
@@ -713,8 +713,8 @@
 
 <tr class="data-row">
   <td class="label-cell">Bluetooth（アプリ連携）</td>
-  <td class="zoom-cell"><span class="no">—</span></td>
-  <td class="zoom-cell"><span class="no">—</span></td>
+  <td class="zoom-cell"><span class="partial">オプション</span><span class="val-sub">BTA-1 必要</span></td>
+  <td class="zoom-cell"><span class="partial">オプション</span><span class="val-sub">BTA-1 必要</span></td>
   <td class="sd-cell"><span class="yes">✓ BLE</span><span class="val-sub">Wingman App</span></td>
   <td class="sd-cell"><span class="yes">✓ BLE</span><span class="val-sub">Wingman App</span></td>
   <td class="sd-cell"><span class="yes">✓</span><span class="val-sub">SD-Remote App</span></td>
@@ -742,9 +742,9 @@
   <td class="label-cell">USB コントロールサーフェス</td>
   <td class="zoom-cell"><span class="no">—</span></td>
   <td class="zoom-cell"><span class="no">—</span></td>
-  <td class="sd-cell"><span class="no">—</span></td>
-  <td class="sd-cell"><span class="no">—</span></td>
-  <td class="sd-cell"><span class="yes">✓</span></td>
+  <td class="sd-cell"><span class="yes">✓</span><span class="val-sub">MIDI制御 (USB-A)</span></td>
+  <td class="sd-cell"><span class="yes">✓</span><span class="val-sub">MIDI制御 (USB-A)</span></td>
+  <td class="sd-cell"><span class="yes">✓</span><span class="val-sub">CL-12 / MCU</span></td>
 </tr>
 
 <!-- ═══════════════════════════════════ DISPLAY / UI ═══════════════════════════════════ -->
@@ -753,10 +753,10 @@
 <tr class="data-row">
   <td class="label-cell">ディスプレイ</td>
   <td class="zoom-cell"><span class="val">1.54" カラーLCD</span><span class="val-sub">240×240 / モノクロモード対応</span></td>
-  <td class="zoom-cell"><span class="val">2.4" カラー液晶</span><span class="val-sub">モノクロモード対応</span></td>
-  <td class="sd-cell"><span class="val">タッチスクリーン</span><span class="val-sub">日光下可読</span></td>
-  <td class="sd-cell"><span class="val">タッチスクリーン</span><span class="val-sub">日光下可読</span></td>
-  <td class="sd-cell"><span class="val">タッチスクリーン</span><span class="val-sub">日光下可読</span></td>
+  <td class="zoom-cell"><span class="val">2.4" カラーLCD</span><span class="val-sub">320×240 / モノクロモード対応</span></td>
+  <td class="sd-cell"><span class="val">1.6" タッチIPS LCD</span><span class="val-sub">320×256 / 日光下可読</span></td>
+  <td class="sd-cell"><span class="val">1.6" タッチIPS LCD</span><span class="val-sub">320×256 / 日光下可読</span></td>
+  <td class="sd-cell"><span class="val">LCD 320×240</span><span class="val-sub">非タッチ / 反射型 / 日光下可読</span></td>
 </tr>
 
 <tr class="data-row">
@@ -842,15 +842,16 @@
 </div>
 
 <footer>
-  <strong>出典 / Sources：</strong><br>
-  <a href="https://zoomcorp.com/en/us/field-recorders/field-recorders/f8n-pro/">Zoom F8n Pro 公式</a> &nbsp;|&nbsp;
-  <a href="https://zoomcorp.com/en/us/field-recorders/field-recorders/f6/">Zoom F6 公式</a> &nbsp;|&nbsp;
-  <a href="https://www.sounddevices.com/mixpre-6-ii-specifications/">MixPre-6 II スペック</a> &nbsp;|&nbsp;
-  <a href="https://www.sounddevices.com/mixpre-10-ii-specifications/">MixPre-10 II スペック</a> &nbsp;|&nbsp;
-  <a href="https://www.sounddevices.com/833-specifications-3/">Sound Devices 833 スペック</a> &nbsp;|&nbsp;
-  <a href="https://www.sweetwater.com/store/detail/F8NPro--zoom-f8n-pro-multitrack-field-recorder">Sweetwater F8n Pro</a> &nbsp;|&nbsp;
-  <a href="https://www.creativefieldrecording.com/2025/04/30/32-bit-float-field-recorders/">Creative Field Recording 比較 (2025)</a><br><br>
-  価格は2025年6月現在の参考価格（USD）。仕様は各社公式情報に基づく。一部スペックは「—」（未公開）。
+  <strong>出典 / Sources（全項目メーカー公式スペックで検証済み）：</strong><br>
+  <a href="https://zoomcorp.com/en/us/field-recorders/field-recorders/f6/">Zoom F6 公式スペック</a> &nbsp;|&nbsp;
+  <a href="https://zoomcorp.com/en/us/field-recorders/field-recorders/f8n-pro/">Zoom F8n Pro 公式スペック</a> &nbsp;|&nbsp;
+  <a href="https://www.sounddevices.com/mixpre-6-ii-specifications/">MixPre-6 II 公式スペック</a> &nbsp;|&nbsp;
+  <a href="https://www.sounddevices.com/mixpre-10-ii-specifications/">MixPre-10 II 公式スペック</a> &nbsp;|&nbsp;
+  <a href="https://www.sounddevices.com/833-specifications-3/">Sound Devices 833 公式スペック</a><br><br>
+  <strong>検証日：</strong>2026-06-16 ／ 全スペックは上記メーカー公式スペックページを一次ソースとして照合。<br>
+  価格は参考価格（USD）。確認できなかった項目は「公称値なし」「記載なし」と明示し、推測値は記載していません。<br>
+  <strong>注記：</strong>ダイナミックレンジはMixPre系=ADC（多段A/D, 142dB）、833=単一A/D（120dB typ）で測定条件が異なります。
+  Zoom機はデュアルA/D方式のため単一のDR公称値なし。32-bit float時の最大サンプルレートとトラック数の制約は本文の注記参照。
 </footer>
 
 </body>
