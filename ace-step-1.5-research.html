@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACE-Step 1.5 — ローカル音楽生成AI 徹底調査レポート 2026</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222535;
+      --border: #2e3149;
+      --accent: #7c6af7;
+      --accent2: #5eead4;
+      --accent3: #f472b6;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --green: #4ade80;
+      --yellow: #fbbf24;
+      --red: #f87171;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* Header */
+    .hero {
+      background: linear-gradient(135deg, #1a1d27 0%, #0f1117 50%, #1a0f2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at center, rgba(124,106,247,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(124,106,247,0.15);
+      border: 1px solid rgba(124,106,247,0.4);
+      color: var(--accent);
+      padding: 4px 16px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+    /* Layout */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* TOC */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 40px 0;
+    }
+    .toc h2 { font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin: 6px 0; }
+    .toc a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .toc a:hover { color: var(--accent); }
+
+    /* Sections */
+    section { margin: 56px 0; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    h2 { font-size: 22px; font-weight: 700; color: #fff; }
+    h3 { font-size: 16px; font-weight: 600; color: var(--text); margin: 28px 0 12px; }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 8px; }
+    .card-value { font-size: 20px; font-weight: 700; color: #fff; }
+    .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Summary box */
+    .summary-box {
+      background: linear-gradient(135deg, rgba(124,106,247,0.08), rgba(94,234,212,0.05));
+      border: 1px solid rgba(124,106,247,0.3);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 28px 0;
+    }
+    .summary-box p { color: var(--text-muted); font-size: 15px; }
+    .summary-box strong { color: var(--text); }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 20px 0; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--surface2); }
+    thead th { padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; }
+    tbody tr { border-top: 1px solid var(--border); }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    td { padding: 12px 16px; font-size: 14px; color: var(--text-muted); vertical-align: top; }
+    td:first-child { color: var(--text); font-weight: 500; }
+    td strong { color: var(--text); }
+    .best { color: var(--green); font-weight: 700; }
+    .mid { color: var(--yellow); }
+    .low { color: var(--red); }
+
+    /* Code */
+    pre {
+      background: #0a0c12;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--accent2);
+    }
+    pre code { color: #cdd6f4; }
+    .comment { color: #6c7086; }
+    .cmd { color: var(--accent2); }
+
+    /* Mode grid */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .mode-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .mode-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .mode-card.basic .mode-icon { background: rgba(94,234,212,0.15); }
+    .mode-card.edit .mode-icon { background: rgba(124,106,247,0.15); }
+    .mode-card.special .mode-icon { background: rgba(244,114,182,0.15); }
+    .mode-name { font-weight: 600; font-size: 14px; color: #fff; }
+    .mode-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Benchmark */
+    .bench-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .bench-bar { height: 6px; border-radius: 99px; background: var(--border); flex: 1; overflow: hidden; }
+    .bench-fill { height: 100%; border-radius: 99px; }
+    .bench-score { font-size: 13px; font-weight: 700; min-width: 36px; text-align: right; }
+
+    /* Pro/Con */
+    .procon { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 600px) { .procon { grid-template-columns: 1fr; } }
+    .pro, .con {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .pro { border: 1px solid rgba(74,222,128,0.25); }
+    .con { border: 1px solid rgba(248,113,113,0.25); }
+    .pro h4 { color: var(--green); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .con h4 { color: var(--red); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .pro li, .con li { font-size: 13px; color: var(--text-muted); margin: 6px 0 6px 16px; }
+
+    /* Version timeline */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2));
+      border-radius: 2px;
+    }
+    .tl-item { position: relative; margin: 20px 0; }
+    .tl-dot {
+      position: absolute;
+      left: -21px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .tl-item.latest .tl-dot { background: var(--accent2); box-shadow: 0 0 0 3px rgba(94,234,212,0.2); }
+    .tl-version { font-size: 13px; font-weight: 700; color: var(--accent); }
+    .tl-date { font-size: 11px; color: var(--text-muted); margin-left: 8px; }
+    .tl-desc { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Links */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Warning / Info boxes */
+    .info-box {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .info-box.warning { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.3); color: var(--yellow); }
+    .info-box.tip { background: rgba(94,234,212,0.06); border: 1px solid rgba(94,234,212,0.25); color: var(--accent2); }
+    .info-box.note { background: rgba(124,106,247,0.06); border: 1px solid rgba(124,106,247,0.25); color: var(--text-muted); }
+
+    /* Footer */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .source-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+    .source-link {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+    .source-link:hover { border-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">調査レポート 2026-06-17</div>
+  <h1>ACE-Step 1.5</h1>
+  <p class="hero-sub">ローカル音楽生成AI 徹底調査レポート<br>GitHub・arXiv・KVR・ComfyUI・AMD公式ほか多ソース横断分析</p>
+  <div class="hero-meta">
+    <span>🎵 MIT ライセンス・完全無料</span>
+    <span>⭐ 11,100+ Stars</span>
+    <span>⚡ RTX 3090で10秒/曲</span>
+    <span>🌐 50言語以上対応</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#summary">エグゼクティブサマリー</a></li>
+      <li><a href="#basic">基本情報</a></li>
+      <li><a href="#variants">モデルバリアント</a></li>
+      <li><a href="#arch">アーキテクチャ</a></li>
+      <li><a href="#modes">主要機能（9モード）</a></li>
+      <li><a href="#bench">パフォーマンス・ベンチマーク</a></li>
+      <li><a href="#platform">対応プラットフォーム</a></li>
+      <li><a href="#install">インストール方法</a></li>
+      <li><a href="#ecosystem">エコシステム・拡張機能</a></li>
+      <li><a href="#limitations">限界・既知の問題</a></li>
+      <li><a href="#compare">競合比較</a></li>
+      <li><a href="#community">コミュニティ動向</a></li>
+      <li><a href="#changelog">バージョン履歴</a></li>
+      <li><a href="#recommend">プロデューサーへの推奨</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. SUMMARY -->
+  <section id="summary">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>エグゼクティブサマリー</h2>
+    </div>
+    <div class="summary-box">
+      <p>ACE-Step 1.5（2026年1月リリース）は、<strong>MITライセンスで完全無料・完全ローカル動作</strong>するオープンソース音楽生成AIモデル。音楽AIの「Stable Diffusion moment」と称され、これまでクラウドAPIに閉じていた商用品質の音楽生成を、コンシューマーGPUへ開放した。</p>
+      <br>
+      <p>2026年4月にリリースされた上位版 <strong>ACE-Step 1.5 XL（4Bパラメータ）</strong>は、11項目の主要ベンチマークすべてでSuno v5を上回るスコアを記録。RTX 3090で10秒以下・A100で2秒以下という驚異的な速度を実現している。</p>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-label">リリース日</div>
+        <div class="card-value">2026年1月</div>
+        <div class="card-sub">XL版は2026年4月3日</div>
+      </div>
+      <div class="card">
+        <div class="card-label">GitHub Stars</div>
+        <div class="card-value">11,100+</div>
+        <div class="card-sub">Forks: 1,400+（2026年5月）</div>
+      </div>
+      <div class="card">
+        <div class="card-label">最小VRAM</div>
+        <div class="card-value">4 GB</div>
+        <div class="card-sub">XL版は12〜20GB推奨</div>
+      </div>
+      <div class="card">
+        <div class="card-label">生成速度</div>
+        <div class="card-value">&lt; 10秒</div>
+        <div class="card-sub">RTX 3090で4分曲</div>
+      </div>
+      <div class="card">
+        <div class="card-label">ライセンス</div>
+        <div class="card-value">MIT</div>
+        <div class="card-sub">商用利用可・完全無料</div>
+      </div>
+      <div class="card">
+        <div class="card-label">言語対応</div>
+        <div class="card-value">50+言語</div>
+        <div class="card-sub">歌詞生成も多言語</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. BASIC INFO -->
+  <section id="basic">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>基本情報</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td>開発元</td><td>ACE Studio（StepFun傘下）</td></tr>
+          <tr><td>論文</td><td><a href="https://arxiv.org/abs/2602.00744" target="_blank">arXiv:2602.00744 — Pushing the Boundaries of Open-Source Music Generation</a></td></tr>
+          <tr><td>GitHub</td><td><a href="https://github.com/ace-step/ACE-Step-1.5" target="_blank">ace-step/ACE-Step-1.5</a></td></tr>
+          <tr><td>HuggingFace</td><td><a href="https://huggingface.co/ACE-Step/Ace-Step1.5" target="_blank">ACE-Step/Ace-Step1.5</a></td></tr>
+          <tr><td>学習データ</td><td>27M曲（2700万曲）</td></tr>
+          <tr><td>最終更新</td><td>2026年5月18日（v0.1.8）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3. VARIANTS -->
+  <section id="variants">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>モデルバリアント</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>バリアント</th>
+            <th>DiTパラメータ</th>
+            <th>必要VRAM</th>
+            <th>特徴</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Base</strong></td>
+            <td>2B</td>
+            <td>≥ 4 GB</td>
+            <td>標準。LoRA学習に最適</td>
+          </tr>
+          <tr>
+            <td><strong>SFT</strong></td>
+            <td>2B</td>
+            <td>≥ 4 GB</td>
+            <td>教師ありFT版。品質向上</td>
+          </tr>
+          <tr>
+            <td><strong>Turbo</strong></td>
+            <td>2B</td>
+            <td>≥ 4 GB</td>
+            <td>8ステップ蒸留。最速</td>
+          </tr>
+          <tr>
+            <td><strong>XL Base</strong></td>
+            <td class="best">4B</td>
+            <td>≥ 12 GB（OL）</td>
+            <td>高品質。LoRA学習向き</td>
+          </tr>
+          <tr>
+            <td><strong>XL SFT</strong></td>
+            <td class="best">4B</td>
+            <td>≥ 12 GB（OL）</td>
+            <td>最高品質。プロンプト厳密追従</td>
+          </tr>
+          <tr>
+            <td><strong>XL Turbo</strong></td>
+            <td class="best">4B</td>
+            <td>≥ 12 GB（OL）</td>
+            <td>高速反復用</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box warning">⚠️ XL系の最高品質には VRAM 20GB 以上を推奨。12GBではオフロードが必要で速度が低下する。</div>
+  </section>
+
+  <!-- 4. ARCHITECTURE -->
+  <section id="arch">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>アーキテクチャ</h2>
+    </div>
+
+    <h3>4.1 ハイブリッド2段階パイプライン</h3>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin: 16px 0; text-align: center;">
+      <div style="display: flex; flex-direction: column; gap: 12px; align-items: center; max-width: 500px; margin: 0 auto;">
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 24px; width: 100%;">
+          <div style="color: var(--text-muted); font-size: 12px;">ユーザー入力</div>
+          <div style="color: #fff; font-weight: 600;">テキストプロンプト（日本語含む50言語）</div>
+        </div>
+        <div style="color: var(--text-muted);">↓</div>
+        <div style="background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.4); border-radius: 8px; padding: 16px 24px; width: 100%;">
+          <div style="color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">言語モデル（LM）</div>
+          <div style="color: var(--text-muted); font-size: 13px; margin-top: 6px;">Qwen基盤 / 0.6B〜4B<br>ChainOfThought推論 → YAML（BPM・調・構造・歌詞）</div>
+        </div>
+        <div style="color: var(--text-muted);">↓</div>
+        <div style="background: rgba(94,234,212,0.08); border: 1px solid rgba(94,234,212,0.3); border-radius: 8px; padding: 16px 24px; width: 100%;">
+          <div style="color: var(--accent2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">拡散トランスフォーマー（DiT）</div>
+          <div style="color: var(--text-muted); font-size: 13px; margin-top: 6px;">2B / 4B<br>1D ConvVAE（48kHz → 64次元 / 1920倍圧縮）<br>奇数層：局所 / 偶数層：グローバルアテンション</div>
+        </div>
+        <div style="color: var(--text-muted);">↓</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 24px; width: 100%;">
+          <div style="color: var(--green); font-weight: 600;">48kHz ステレオ音声出力（最長10分）</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>4.2 強化学習（内在的報酬）</h3>
+    <div class="info-box note">
+      外部の人間フィードバックモデルを使わない<strong>内在的強化学習</strong>を採用。クロスアテンションヘッド間の一致度を報酬信号として利用し、歌詞とオーディオの同期を自己最適化する。
+    </div>
+  </section>
+
+  <!-- 5. MODES -->
+  <section id="modes">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>主要機能（9モード）</h2>
+    </div>
+
+    <h3>基本モード</h3>
+    <div class="mode-grid">
+      <div class="mode-card basic">
+        <div class="mode-icon">🎵</div>
+        <div>
+          <div class="mode-name">Text2Music</div>
+          <div class="mode-desc">テキスト → 完全楽曲生成（最長10分）</div>
+        </div>
+      </div>
+      <div class="mode-card basic">
+        <div class="mode-icon">🎤</div>
+        <div>
+          <div class="mode-name">Lyric2Vocal</div>
+          <div class="mode-desc">歌詞 + スタイル指定 → ボーカル生成</div>
+        </div>
+      </div>
+      <div class="mode-card basic">
+        <div class="mode-icon">🔁</div>
+        <div>
+          <div class="mode-name">Text2Samples</div>
+          <div class="mode-desc">テキスト → 短いループ・サンプル生成</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>編集モード</h3>
+    <div class="mode-grid">
+      <div class="mode-card edit">
+        <div class="mode-icon">🎛️</div>
+        <div>
+          <div class="mode-name">Variations</div>
+          <div class="mode-desc">同一構造で異なるバリエーションを生成</div>
+        </div>
+      </div>
+      <div class="mode-card edit">
+        <div class="mode-icon">✏️</div>
+        <div>
+          <div class="mode-name">Repaint（Inpaint）</div>
+          <div class="mode-desc">特定区間のみ差し替え</div>
+        </div>
+      </div>
+      <div class="mode-card edit">
+        <div class="mode-icon">🔧</div>
+        <div>
+          <div class="mode-name">Flow-Edit</div>
+          <div class="mode-desc">プロンプト誘導型のオーディオ編集（v0.1.8〜）</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>専門モード</h3>
+    <div class="mode-grid">
+      <div class="mode-card special">
+        <div class="mode-icon">🎙️</div>
+        <div>
+          <div class="mode-name">RapMachine</div>
+          <div class="mode-desc">ラップ専用モード</div>
+        </div>
+      </div>
+      <div class="mode-card special">
+        <div class="mode-icon">🎸</div>
+        <div>
+          <div class="mode-name">StemGen</div>
+          <div class="mode-desc">個別ステム生成（楽器別）</div>
+        </div>
+      </div>
+      <div class="mode-card special">
+        <div class="mode-icon">🎹</div>
+        <div>
+          <div class="mode-name">Singing2Accomp（Vocal2BGM）</div>
+          <div class="mode-desc">ボーカル音声から伴奏を自動生成</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. BENCHMARK -->
+  <section id="bench">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>パフォーマンス・ベンチマーク</h2>
+    </div>
+
+    <h3>6.1 生成速度</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-label">NVIDIA A100</div>
+        <div class="card-value" style="color: var(--green);">&lt; 2秒</div>
+        <div class="card-sub">4分の楽曲を生成</div>
+      </div>
+      <div class="card">
+        <div class="card-label">RTX 5090</div>
+        <div class="card-value" style="color: var(--green);">約1秒</div>
+        <div class="card-sub">4分の楽曲を生成</div>
+      </div>
+      <div class="card">
+        <div class="card-label">RTX 3090</div>
+        <div class="card-value" style="color: var(--accent2);">&lt; 10秒</div>
+        <div class="card-sub">4分の楽曲を生成</div>
+      </div>
+    </div>
+
+    <h3>6.2 品質ベンチマーク（XL版）</h3>
+    <div class="info-box note">論文ソース: arXiv:2602.00744 / ACE-Step 公式ページ。値が高いほど良好。</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>モデル</th>
+            <th>AudioBox CU</th>
+            <th>SongEval Coh.</th>
+            <th>Style Align</th>
+            <th>Lyric Align</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ACE-Step 1.5 XL</strong></td>
+            <td class="best">8.09 ★</td>
+            <td class="best">4.72 ★</td>
+            <td class="best">47.9 ★</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Suno v5</td>
+            <td>7.87</td>
+            <td>4.71</td>
+            <td>46.8</td>
+            <td class="best">34.2 ★</td>
+          </tr>
+          <tr>
+            <td>HeartMuLa</td>
+            <td>7.89</td>
+            <td>4.69</td>
+            <td>31.7</td>
+            <td>28.6</td>
+          </tr>
+          <tr>
+            <td>ACE-Step v1.0</td>
+            <td class="low">7.52</td>
+            <td class="low">3.85</td>
+            <td class="low">28.5</td>
+            <td class="low">0.9</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box warning">⚠️ 盲聴テストでの主観評価は「Suno v4.5〜v5の間」に位置する結果も。ベンチマーク≠主観的な好み。</div>
+  </section>
+
+  <!-- 7. PLATFORM -->
+  <section id="platform">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>対応プラットフォーム</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>バックエンド</th><th>対応</th><th>備考</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>NVIDIA CUDA</td><td class="best">✓</td><td>最もサポートが厚い</td></tr>
+          <tr><td>AMD ROCm</td><td class="best">✓</td><td>AMD公式ブログで言及・検証済み</td></tr>
+          <tr><td>Intel XPU</td><td class="best">✓</td><td>Intel ARC等対応</td></tr>
+          <tr><td>Apple Silicon (MPS)</td><td class="best">✓</td><td>M1/M2/M3/M4 Mac対応</td></tr>
+          <tr><td>CPU</td><td class="mid">△</td><td>動作するが非常に低速</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box tip">💡 AMD公式は Ryzen AI プロセッサ × Radeon グラフィックスでの動作を公式ブログで発表。Mac・AMD・Intel ユーザーにも本格対応した数少ないモデル。</div>
+  </section>
+
+  <!-- 8. INSTALL -->
+  <section id="install">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>インストール方法</h2>
+    </div>
+
+    <h3>8.1 標準インストール（Gradio UI）</h3>
+    <pre><code><span class="comment"># Step 1: uvのインストール</span>
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+<span class="comment"># Step 2: リポジトリのクローン</span>
+git clone https://github.com/ace-step/ACE-Step-1.5
+cd ACE-Step-1.5
+
+<span class="comment"># Step 3: 依存関係のインストール</span>
+uv sync
+
+<span class="comment"># Step 4: 起動（初回はモデルを自動ダウンロード）</span>
+uv run acestep</code></pre>
+
+    <h3>8.2 モデルのダウンロード</h3>
+    <pre><code><span class="comment"># 主要モデルのダウンロード</span>
+uv run acestep-download
+
+<span class="comment"># 全モデルをダウンロード（時間がかかる）</span>
+uv run acestep-download --all
+
+<span class="comment"># ModelScopeから（中国・特定地域向け）</span>
+uv run acestep-download --download-source modelscope</code></pre>
+
+    <h3>8.3 ComfyUI 経由（推奨：ビジュアルワークフロー）</h3>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td>ダウンロードファイル</td><td><code>ace_step_1.5_turbo_aio.safetensors</code>（All-in-One版）</td></tr>
+          <tr><td>配置先</td><td><code>ComfyUI/models/checkpoints/</code></td></tr>
+          <tr><td>ワークフロー取得</td><td>ComfyUI のテンプレートから「ACE-Step」を検索</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 9. ECOSYSTEM -->
+  <section id="ecosystem">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>エコシステム・拡張機能</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>機能</th><th>詳細</th><th>バージョン</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ComfyUI ネイティブ対応</td><td>ビジュアルノードベースのワークフロー</td><td>v0.1.0〜</td></tr>
+          <tr><td>Side-Step（LoRA学習UI）</td><td>Gradio上から数曲でスタイル学習</td><td>v0.1.0-rc〜</td></tr>
+          <tr><td>LoKR対応</td><td>LoRAより10倍高速な学習（Kronecker積）</td><td>v0.1.2〜</td></tr>
+          <tr><td>マルチLoRAスタッキング</td><td>複数のLoRAを重ね掛け</td><td>v0.1.0-rc〜</td></tr>
+          <tr><td>ScragVAE</td><td>コミュニティ製の改善VAE。ドロップダウン選択</td><td>v0.1.7〜</td></tr>
+          <tr><td>DCW（Differential Correction）</td><td>CVPR 2026論文ベース。学習不要のサンプラー補正</td><td>v0.1.7〜</td></tr>
+          <tr><td>Retake機能</td><td>ノイズ混合で可変バリエーション（0.0〜1.0）</td><td>v0.1.8〜</td></tr>
+          <tr><td>Flow-Edit</td><td>プロンプト誘導型オーディオ編集</td><td>v0.1.8〜</td></tr>
+          <tr><td>KoboldCpp対応</td><td>KoboldCpp 1.109以上でも動作</td><td>—</td></tr>
+          <tr><td>Docker対応</td><td>自動ビルド・ghcr.io配布</td><td>v0.1.8〜</td></tr>
+          <tr><td>REST API</td><td>コミュニティ製ラッパー</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 10. LIMITATIONS -->
+  <section id="limitations">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>限界・既知の問題</h2>
+    </div>
+
+    <h3>音質面</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>問題</th><th>詳細</th><th>重症度</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ボーカルアーティファクト</td>
+            <td>メタリックな音色・サ行の歪み・ピッチのズレ（特に高域・ファルセット）</td>
+            <td class="mid">中〜高</td>
+          </tr>
+          <tr>
+            <td>クリッピング/歪み</td>
+            <td>ロック・エレクトロ系で顕著。ステップ数50→100で改善するが生成時間が倍</td>
+            <td class="mid">中</td>
+          </tr>
+          <tr>
+            <td>表現力不足</td>
+            <td>ビブラート・ピッチベンドなどの連続的なニュアンスが乏しい</td>
+            <td class="mid">中</td>
+          </tr>
+          <tr>
+            <td>メロディの記憶残存性</td>
+            <td>技術的には正確だが印象に残りにくいメロディ</td>
+            <td class="low">低〜中</td>
+          </tr>
+          <tr>
+            <td>ドラムの機械的感</td>
+            <td>感情的なドラムフィルが弱い。エントリーが唐突</td>
+            <td class="low">低〜中</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>機能面</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>問題</th><th>詳細</th><th>重症度</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Repaintモード</td>
+            <td>差し替え区間にボーカルが入らないことが多い。前後との不自然なつなぎ目（Issue #1151）</td>
+            <td class="mid">中〜高</td>
+          </tr>
+          <tr>
+            <td>歌詞追従性</td>
+            <td>英語歌詞の追従精度が低いと報告（Issue #391）</td>
+            <td class="mid">中</td>
+          </tr>
+          <tr>
+            <td>ジャンルドリフト</td>
+            <td>2分超の生成でジャンルが変わることがある</td>
+            <td class="mid">中</td>
+          </tr>
+          <tr>
+            <td>シード依存性</td>
+            <td>ランダムシードで品質が大きく変動する「ガチャ」状態</td>
+            <td class="mid">中</td>
+          </tr>
+          <tr>
+            <td>XL版のVRAM要件</td>
+            <td>2B版は4GBで動作するが、XL（4B）は12〜20GB必要</td>
+            <td class="low">低（上位GPU所有者向け）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 11. COMPARE -->
+  <section id="compare">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>競合比較</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>比較項目</th>
+            <th>ACE-Step 1.5</th>
+            <th>Suno v5</th>
+            <th>HeartMuLa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>コスト</td>
+            <td class="best">完全無料</td>
+            <td class="low">サブスク制</td>
+            <td class="low">クラウド課金</td>
+          </tr>
+          <tr>
+            <td>動作場所</td>
+            <td class="best">ローカル</td>
+            <td class="low">クラウドのみ</td>
+            <td class="low">クラウドのみ</td>
+          </tr>
+          <tr>
+            <td>ライセンス</td>
+            <td class="best">MIT（商用可）</td>
+            <td class="low">制限あり</td>
+            <td class="low">制限あり</td>
+          </tr>
+          <tr>
+            <td>ベンチマーク</td>
+            <td class="best">11項目でSuno超（XL）</td>
+            <td class="mid">歌詞・スタイル追従に強み</td>
+            <td>中程度</td>
+          </tr>
+          <tr>
+            <td>主観的音声品質</td>
+            <td class="mid">Suno v4.5〜v5の間</td>
+            <td class="best">業界トップクラス</td>
+            <td class="mid">高品質</td>
+          </tr>
+          <tr>
+            <td>最長生成</td>
+            <td class="best">10分</td>
+            <td class="low">4分</td>
+            <td class="mid">6分</td>
+          </tr>
+          <tr>
+            <td>言語対応</td>
+            <td class="best">50言語以上</td>
+            <td class="low">英語中心</td>
+            <td class="mid">10言語以上</td>
+          </tr>
+          <tr>
+            <td>LoRA</td>
+            <td class="best">✓ 完全対応</td>
+            <td class="low">✗</td>
+            <td class="low">✗</td>
+          </tr>
+          <tr>
+            <td>ComfyUI対応</td>
+            <td class="best">✓</td>
+            <td class="low">✗</td>
+            <td class="low">✗</td>
+          </tr>
+          <tr>
+            <td>セットアップ容易性</td>
+            <td class="mid">中程度（要GPU環境）</td>
+            <td class="best">簡単（即利用可）</td>
+            <td class="best">簡単（即利用可）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 12. COMMUNITY -->
+  <section id="community">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>コミュニティ動向</h2>
+    </div>
+
+    <h3>KVR Audio フォーラム</h3>
+    <div class="summary-box">
+      <p>Text2Music・カバー編集・楽器抽出などの多機能性を高く評価する声が多い。RTX 3070 8GB でも動作するという報告あり。一方、「ボタン押して曲が出る」アプローチへの懐疑的なコメントも散見。複数バージョン（GitHub無料版・オンライン有料版・ACE Studio）の混乱を指摘するユーザーも。</p>
+    </div>
+
+    <h3>GitHub コミュニティ</h3>
+    <div class="summary-box">
+      <p>Issue 1,000件超と非常に活発。コミュニティから ComfyUI ノード・ONNX エクスポート・REST APIラッパーが提供されている。Musician's Guide（Discussion #235）など、使用者向けの詳細なディスカッションが充実。</p>
+    </div>
+
+    <h3>プロデューサー層の動き</h3>
+    <div class="summary-box">
+      <p>一部プロデューサーが「サブスクを切ってローカル移行」する動きを報告。LoRA によるスタイル個人化が最大の差別化要因として認識されている。AMD公式がサポートを発表したことで、NVIDIA 以外のユーザー層への普及も加速している。</p>
+    </div>
+  </section>
+
+  <!-- 13. CHANGELOG -->
+  <section id="changelog">
+    <div class="section-header">
+      <div class="section-num">13</div>
+      <h2>バージョン履歴</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item latest">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.8</span><span class="tl-date">2026年5月18日（最新）</span>
+          <div class="tl-desc">Docker対応（ghcr.io自動ビルド）、Retake機能（0.0〜1.0ノイズ混合）、Flow-Edit（プロンプト誘導型編集）、Repaint改善、MLX互換性修正</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.7</span>
+          <div class="tl-desc">ScragVAE（コミュニティVAE）対応、DCW実装（CVPR 2026ベース）、ユーザー設定のセッション保持、ポルトガル語翻訳追加</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.6</span><span class="tl-date">2026年4月3日</span>
+          <div class="tl-desc">🚀 <strong>XL Series（4B DiT）投入</strong>。acestep-v15-xl-base/sft/turbo の3バリアント。ベンチマーク11項目でSuno超を達成</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.5</span>
+          <div class="tl-desc">遅延ロード復活、GPU NaN/ノイズ問題解決、基盤安定化</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.4</span><span class="tl-date">2026年3月2日</span>
+          <div class="tl-desc">Gradioコンポーネントリファクタ、OpenRouterエンドポイント追加、自動ラベル付けクラッシュ修正</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.2</span><span class="tl-date">2026年2月20日</span>
+          <div class="tl-desc">LoKR対応（10倍高速学習）、LoRA+torch.compile修正、シェルスクリプトのファイル権限修正</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <span class="tl-version">v0.1.0-rc.1</span>
+          <div class="tl-desc">Side-Step（LoRA学習Gradio UI）実装、マルチLoRAスタッキング対応</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. RECOMMEND -->
+  <section id="recommend">
+    <div class="section-header">
+      <div class="section-num">14</div>
+      <h2>プロデューサーへの推奨</h2>
+    </div>
+
+    <div class="procon">
+      <div class="pro">
+        <h4>✓ ACE-Step 1.5 が向いているケース</h4>
+        <ul>
+          <li>ローカル環境でプライバシーを守りながら音楽生成したい</li>
+          <li>MITライセンスで商用利用したい</li>
+          <li>独自スタイルをLoRA学習させてオリジナリティを出したい</li>
+          <li>ComfyUI でノードベースのワークフローを組みたい</li>
+          <li>長尺（最長10分）の楽曲を生成したい</li>
+          <li>コスト0でサブスク不要にしたい</li>
+          <li>AMD / Intel / Apple Silicon を使っている</li>
+        </ul>
+      </div>
+      <div class="con">
+        <h4>✗ ACE-Step 1.5 が向いていないケース</h4>
+        <ul>
+          <li>ボーカルクオリティを最優先する（Suno v5が優勢）</li>
+          <li>セットアップなしですぐ使いたい</li>
+          <li>高スペックなGPUを持っていない（XL版は12〜20GB必要）</li>
+          <li>歌詞追従精度が命（現状は課題あり）</li>
+          <li>Repaint機能を多用する予定（現状の品質に課題あり）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      💡 <strong>結論</strong>: ローカル・無料・カスタマイズ性で圧倒的に優れており、音楽制作の「Stable Diffusion的存在」になりつつある。ボーカル品質の課題が今後のアップデートで改善されれば、商用ツールの完全代替が視野に入る。
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>調査日: 2026-06-17 | 調査者: アリス（Technology Department）</div>
+  <div class="source-list">
+    <a class="source-link" href="https://github.com/ace-step/ACE-Step-1.5" target="_blank">GitHub</a>
+    <a class="source-link" href="https://arxiv.org/abs/2602.00744" target="_blank">arXiv 論文</a>
+    <a class="source-link" href="https://ace-step.github.io/ace-step-v1.5.github.io/" target="_blank">公式デモ</a>
+    <a class="source-link" href="https://huggingface.co/spaces/ACE-Step/Ace-Step-v1.5" target="_blank">HuggingFace</a>
+    <a class="source-link" href="https://docs.comfy.org/tutorials/audio/ace-step/ace-step-v1-5" target="_blank">ComfyUI 公式</a>
+    <a class="source-link" href="https://www.kvraudio.com/forum/viewtopic.php?t=628941" target="_blank">KVR Audio</a>
+    <a class="source-link" href="https://www.amd.com/en/blogs/2026/commercial-grade-ai-music-generation-on-amd-ryzen-ai-and-radeon-ace-step-1-5.html" target="_blank">AMD 公式</a>
+    <a class="source-link" href="https://heart-mula.com/ace-step" target="_blank">3way比較</a>
+  </div>
+</footer>
+
+</body>
+</html>
