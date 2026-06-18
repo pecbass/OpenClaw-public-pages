@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Reports</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .report-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .report-list li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #e6edf3;
+      transition: background 0.15s;
+    }
+
+    .report-list li a:hover {
+      background: #161b22;
+    }
+
+    .icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .report-title {
+      font-size: 0.95rem;
+      color: #58a6ff;
+      line-height: 1.4;
+    }
+
+    .report-list li a:hover .report-title {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 56px;
+      font-size: 0.8rem;
+      color: #484f58;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OpenClaw Reports</h1>
+      <p>公開レポート一覧</p>
+    </header>
+
+    <div class="section">
+      <div class="section-title">音楽生成 AI</div>
+      <ul class="report-list">
+        <li>
+          <a href="ace-step-1.5-research.html">
+            <span class="icon">🎵</span>
+            <span class="report-title">ACE-Step 1.5 — ローカル音楽生成AI 徹底調査レポート 2026</span>
+          </a>
+        </li>
+        <li>
+          <a href="ace-step-1.5-chatgpt-log.html">
+            <span class="icon">💬</span>
+            <span class="report-title">ACE-Step 1.5 — ChatGPT 会話まとめ</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">音響機器</div>
+      <ul class="report-list">
+        <li>
+          <a href="field-recorder-comparison-2025.html">
+            <span class="icon">🎙️</span>
+            <span class="report-title">フィールドレコーダー 詳細比較チャート 2025</span>
+          </a>
+        </li>
+        <li>
+          <a href="reports/f8npro/review-classification-summary-ja.html">
+            <span class="icon">📊</span>
+            <span class="report-title">Zoom F8n Pro — レビュー分類まとめ</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">映像・アプリ</div>
+      <ul class="report-list">
+        <li>
+          <a href="reports/smartphone-video-apps-2026.html">
+            <span class="icon">📱</span>
+            <span class="report-title">スマートフォン動画撮影アプリ 人気 Top5 調査 2026</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">ツール・ガイド</div>
+      <ul class="report-list">
+        <li>
+          <a href="discord-session-thread-guide.html">
+            <span class="icon">🔧</span>
+            <span class="report-title">Discord で OpenClaw セッションを切り替えるおすすめ構成</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <footer>pecbass / OpenClaw-public-pages</footer>
+  </div>
+</body>
+</html>
