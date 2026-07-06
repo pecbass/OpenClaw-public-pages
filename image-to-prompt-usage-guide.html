@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>/image-to-prompt 使い方ガイド</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #171a24;
+    --border: #2a2f3d;
+    --text: #e7e9ee;
+    --muted: #9aa1b2;
+    --accent: #a78bfa;
+    --accent2: #f472b6;
+    --accent3: #34d399;
+    --code-bg: #10121a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    background: linear-gradient(180deg, #0f1117 0%, #14161f 100%);
+    color: var(--text);
+    line-height: 1.75;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 24px 96px; }
+  header.hero {
+    text-align: center;
+    padding: 40px 20px 32px;
+  }
+  header.hero .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+  }
+  header.hero h1 {
+    font-size: 32px;
+    margin: 0 0 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+  }
+  header.hero p.lead {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-bottom: 24px;
+  }
+  section h2 {
+    font-size: 20px;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(167, 139, 250, 0.18);
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  h3 { font-size: 16px; margin: 20px 0 10px; color: var(--text); }
+  p { color: #cfd3dd; }
+  ul, ol { color: #cfd3dd; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--accent3);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    color: #d8dbe4;
+  }
+  .chat {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 14px 0 22px;
+  }
+  .msg { padding: 14px 18px; font-size: 14px; }
+  .msg.user { background: #1c2030; }
+  .msg.ai { background: #14161f; border-top: 1px solid var(--border); }
+  .msg .role { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .format-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    background: #12141d;
+  }
+  .format-card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .format-card.sd .tag { background: rgba(52, 211, 153, 0.15); color: var(--accent3); }
+  .format-card.nl .tag { background: rgba(244, 114, 182, 0.15); color: var(--accent2); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: #cfd3dd;
+  }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .callout {
+    border-left: 3px solid var(--accent2);
+    background: rgba(244, 114, 182, 0.06);
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .callout strong { color: var(--accent2); }
+  .callout.safety {
+    border-left-color: #f87171;
+    background: rgba(248, 113, 113, 0.06);
+  }
+  .callout.safety strong { color: #f87171; }
+  .path {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 40px;
+  }
+  .step-list { counter-reset: step; list-style: none; padding-left: 0; }
+  .step-list > li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 18px;
+  }
+  .step-list > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #0f1117;
+    font-weight: 800;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="badge">Claude Code / Claude.ai Skill</span>
+    <h1>/image-to-prompt</h1>
+    <p class="lead">添付画像を観察して、限りなく忠実に再現できる画像生成プロンプトを<br>
+    <strong>Stable Diffusion タグ形式</strong> と <strong>自然言語形式</strong> の両方で自動生成するスキル。</p>
+  </header>
+
+  <section>
+    <h2><span class="num">1</span>これは何をするスキルか</h2>
+    <p>画像を1枚渡すだけで、以下をまとめて出力する：</p>
+    <ul>
+      <li>画像の画風・被写体・構図・光・色調などを10軸で徹底観察</li>
+      <li>その画風に合う <strong>推奨モデル（checkpoint）と LoRA</strong> を推定して提案</li>
+      <li><strong>SD タグ形式</strong>（Positive / Negative / 推奨パラメータ）</li>
+      <li><strong>自然言語形式</strong>（Flux・Midjourney・DALL-E・Imagen 向け）</li>
+      <li>「髪色を赤に」等の指示に対する<strong>差分編集</strong>（他の部分は一切変えない）</li>
+    </ul>
+    <div class="callout">
+      <strong>置き場所：</strong> グローバル配置（<code>~/.claude/skills/image-to-prompt/</code>）なので、
+      Claude Code・Claude.ai を問わず、どのプロジェクトからでも呼び出せる。
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>基本の使い方</h2>
+    <ol class="step-list">
+      <li>チャットに<strong>画像を添付</strong>する</li>
+      <li>「このプロンプト作って」「同じ画像を再現したい」などと頼む（スキル名を言わなくてもトリガーされる）</li>
+      <li>SD タグ形式・自然言語形式・推奨モデル/LoRA・再現の限界が返る</li>
+      <li>結果は自動的にファイル保存される（差分編集の前提になるので必須）</li>
+    </ol>
+
+    <div class="chat">
+      <div class="msg user">
+        <div class="role">You</div>
+        📎 image.png 添付 ・「この画像のプロンプト作って」
+      </div>
+      <div class="msg ai">
+        <div class="role">Claude</div>
+        画風はパステル系ゆめかわいいイラストと判定。推奨モデルは Illustrious-XL 系…（SDタグ形式・自然言語形式・LoRA提案を出力し、ファイルに保存）
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="format-card sd">
+        <span class="tag">SD TAG FORMAT</span>
+        <p style="margin:0; font-size:13px;">
+          <code>masterpiece, best quality, 1girl, pastel rainbow hair,
+          twintails, oversized cardigan, giant tree, golden apples...</code>
+        </p>
+      </div>
+      <div class="format-card nl">
+        <span class="tag">NATURAL LANGUAGE</span>
+        <p style="margin:0; font-size:13px; color:#cfd3dd;">
+          A full-body illustration of a girl with pastel-rainbow twintails
+          standing beneath a giant tree bearing glowing golden fruit...
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>差分編集モード（属性だけ変える）</h2>
+    <p>一度プロンプトを生成した後、続けて一部だけ変えたいときに使う。<strong>指定した箇所以外は一切変更されない。</strong></p>
+
+    <div class="chat">
+      <div class="msg user">
+        <div class="role">You</div>
+        髪色を赤にして
+      </div>
+      <div class="msg ai">
+        <div class="role">Claude</div>
+        <code>blonde hair, pastel rainbow hair</code> → <code>red hair, pastel red gradient hair</code> のみ変更。
+        服装・構図・背景・光・画風タグは元のまま。変更箇所を太字でマークして同じファイルに v2 として追記。
+      </div>
+    </div>
+
+    <table>
+      <tr><th>指示の例</th><th>変更されるもの</th></tr>
+      <tr><td>「髪色を赤にして」</td><td>髪色タグのみ</td></tr>
+      <tr><td>「背景を夜にして」</td><td>背景・光の記述（昼要素と矛盾する部分のみ連動）</td></tr>
+      <tr><td>「服をスーツに変えて」</td><td>服装タグのみ</td></tr>
+    </table>
+    <p style="font-size:13px; color:var(--muted);">連動変更が発生した場合は、何を・なぜ連動させたかを明記する。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>モデル・LoRA の推定</h2>
+    <p>画風判定から、Civitai エコシステムの定番 checkpoint 系統を推定して提案する。</p>
+    <table>
+      <tr><th>画風</th><th>推奨モデル系統</th><th>方言</th></tr>
+      <tr><td>現代アニメ・イラスト</td><td>Illustrious-XL / NoobAI-XL</td><td>Danbooru タグ</td></tr>
+      <tr><td>デフォルメ・カートゥーン</td><td>Pony Diffusion V6 XL</td><td>score タグ</td></tr>
+      <tr><td>写実ポートレート</td><td>Juggernaut XL / RealVisXL</td><td>自然英語句</td></tr>
+      <tr><td>高精細・文字入り・複雑構図</td><td>Flux.1 dev</td><td>自然文（ネガティブなし）</td></tr>
+    </table>
+    <div class="callout">
+      <strong>推定は仮説：</strong> モデル名・LoRA名は執筆時点の定番から推定しているだけなので、
+      毎回「Civitai で〇〇と検索して確認」という検証手順とセットで返す。存在が不確かな名前を断定しない。
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>NSFW への対応</h2>
+    <p>成人向け画像も SFW と同じ精度・同じ手順で解析する。露出や性的要素も婉曲・省略せず正確なタグで記述する（曖昧化すると再現度が落ちるため）。</p>
+    <div class="callout safety">
+      <strong>絶対的除外（解析自体を拒否）：</strong>
+      <ol style="margin:8px 0 0;">
+        <li>未成年、または未成年に見える被写体・キャラクターの性的描写</li>
+        <li>実在人物の性的・中傷的コンテンツ</li>
+        <li>非合意的行為を現実の出来事として美化・指南する内容</li>
+      </ol>
+    </div>
+    <p style="font-size:13px; color:var(--muted);">
+      このスキルは指示書であり強制力を持たない。実行するAIモデル自身の安全ポリシーが常に優先される。
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span>保存先とファイル構成</h2>
+    <table>
+      <tr><th>出力ファイル</th><th>保存先</th></tr>
+      <tr><td>プロンプト結果（v1, v2...）</td><td><code>04-output/image-prompts/</code>（workspace 外なら <code>./image-prompts/</code>）</td></tr>
+    </table>
+    <p>スキル本体の構成：</p>
+    <pre>~/.claude/skills/image-to-prompt/
+├── SKILL.md                          # 本体手順
+└── references/
+    ├── analysis-checklist.md         # 10軸の観察チェックリスト
+    ├── sd-format.md                  # タグ規則・重み付け・モデル方言
+    └── model-catalog.md              # 画風→モデル/LoRA対応表</pre>
+  </section>
+
+  <section>
+    <h2><span class="num">7</span>再現度をさらに上げたいとき</h2>
+    <p>プロンプトだけでは詰め切れない要素は、出力の「再現の限界」欄で個別に提案される：</p>
+    <ul>
+      <li><strong>特定人物・キャラの顔</strong> → character LoRA の学習、または IP-Adapter / InstantID / PuLID</li>
+      <li><strong>構図・ポーズの完全一致</strong> → ControlNet（OpenPose / Depth / Canny）</li>
+      <li><strong>画風の完全一致</strong> → style LoRA（なければ元画像で自作学習）</li>
+      <li><strong>微調整</strong> → img2img（denoise 0.3〜0.5）</li>
+    </ul>
+  </section>
+
+  <footer>
+    Generated by Claude &middot; image-to-prompt skill usage guide &middot; 2026-07-06
+  </footer>
+</div>
+</body>
+</html>
