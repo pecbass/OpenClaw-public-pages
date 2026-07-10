@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ableton Live Extensions SDK — 概要とアイデア集 2026</title>
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --surface: #1a1a20;
+      --surface2: #22222a;
+      --border: #2e2e3a;
+      --accent: #ff6b35;
+      --accent2: #7c4dff;
+      --accent3: #00e5ff;
+      --accent4: #69f0ae;
+      --text: #e8e8f0;
+      --text-muted: #8888aa;
+      --text-dim: #555570;
+      --badge-bg: #2a2a38;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ---- HEADER ---- */
+    header {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d1a2e 50%, #0a1a1a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(255,107,53,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,107,53,0.15);
+      border: 1px solid rgba(255,107,53,0.4);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    header h1 span { color: var(--accent); }
+    header .subtitle {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 600px;
+      margin: 0 auto 28px;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .meta-item .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    p { color: var(--text-muted); margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ---- CARDS ---- */
+    .card-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      border-color: rgba(255,107,53,0.3);
+      transform: translateY(-2px);
+    }
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .card h3 { font-size: 15px; margin-bottom: 8px; }
+    .card p { font-size: 13px; }
+
+    /* ---- INFO BLOCK ---- */
+    .info-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 16px;
+    }
+
+    /* ---- SPEC TABLE ---- */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .spec-table th {
+      text-align: left;
+      padding: 10px 16px;
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .spec-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table td:first-child { color: var(--text-muted); font-size: 13px; width: 180px; }
+    .spec-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 2px 3px 2px 0;
+    }
+    .tag-orange { background: rgba(255,107,53,0.15); color: var(--accent); border: 1px solid rgba(255,107,53,0.3); }
+    .tag-purple { background: rgba(124,77,255,0.15); color: #9c7fff; border: 1px solid rgba(124,77,255,0.3); }
+    .tag-cyan   { background: rgba(0,229,255,0.1); color: var(--accent3); border: 1px solid rgba(0,229,255,0.25); }
+    .tag-green  { background: rgba(105,240,174,0.1); color: var(--accent4); border: 1px solid rgba(105,240,174,0.25); }
+    .tag-red    { background: rgba(255,82,82,0.1); color: #ff7070; border: 1px solid rgba(255,82,82,0.25); }
+    .tag-gray   { background: var(--badge-bg); color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* ---- CAN/CANNOT ---- */
+    .can-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 640px) { .can-grid { grid-template-columns: 1fr; } }
+
+    .can-list, .cannot-list { list-style: none; }
+    .can-list li, .cannot-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .can-list li:last-child, .cannot-list li:last-child { border-bottom: none; }
+    .icon-yes { color: var(--accent4); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .icon-no  { color: #ff7070; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ---- IDEA CARDS ---- */
+    .idea-section {
+      margin-bottom: 40px;
+    }
+    .idea-category-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cat-icon { font-size: 22px; }
+    .cat-label { font-size: 13px; color: var(--text-muted); }
+
+    .idea-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+      margin-bottom: 12px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .idea-card:hover { border-color: rgba(255,107,53,0.25); }
+    .idea-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .idea-title { font-size: 15px; font-weight: 600; }
+    .idea-tags { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
+    .idea-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .idea-detail {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+    .difficulty-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 10px;
+    }
+    .bars {
+      display: flex;
+      gap: 3px;
+    }
+    .bar {
+      width: 20px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+    }
+    .bar.filled-orange { background: var(--accent); }
+    .bar.filled-purple { background: #7c4dff; }
+    .bar.filled-cyan   { background: var(--accent3); }
+
+    /* ---- COMMUNITY EXAMPLES ---- */
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .example-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .example-card .author { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+
+    /* ---- TIMELINE ---- */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -25px; top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .timeline-date { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+    .timeline-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .timeline-body { font-size: 13px; color: var(--text-muted); }
+
+    /* ---- vs MFL ---- */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .compare-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .compare-table th:nth-child(1) { color: var(--text-muted); }
+    .compare-table th:nth-child(2) { color: var(--accent); background: rgba(255,107,53,0.06); }
+    .compare-table th:nth-child(3) { color: #9c7fff; background: rgba(124,77,255,0.06); }
+    .compare-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .compare-table td:nth-child(2) { background: rgba(255,107,53,0.04); }
+    .compare-table td:nth-child(3) { background: rgba(124,77,255,0.04); }
+    .compare-table td:first-child { color: var(--text-muted); font-size: 12.5px; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .check { color: var(--accent4); }
+    .cross { color: #ff7070; }
+    .partial { color: #ffd740; }
+
+    /* ---- SOURCES ---- */
+    .source-list { list-style: none; }
+    .source-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .source-list li:last-child { border-bottom: none; }
+    .source-list a {
+      color: var(--accent3);
+      text-decoration: none;
+    }
+    .source-list a:hover { text-decoration: underline; }
+
+    /* ---- TOC ---- */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .toc-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { font-size: 13.5px; margin-bottom: 6px; }
+    .toc a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .toc a:hover { color: var(--accent); }
+
+    /* ---- QUOTE ---- */
+    .quote-block {
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      background: rgba(255,107,53,0.05);
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text);
+    }
+    .quote-block cite {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-style: normal;
+      color: var(--text-muted);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      padding: 32px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent3); text-decoration: none; }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      header { padding: 40px 20px; }
+      section { padding: 40px 0; }
+      .container { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======= HEADER ======= -->
+<header>
+  <div class="header-badge">Research Report — 2026-06-03</div>
+  <h1>Ableton Live <span>Extensions SDK</span></h1>
+  <p class="subtitle">JavaScript/TypeScript でライブを拡張する新しいオープンプラットフォーム — 概要・技術解説・アイデア集</p>
+  <div class="meta-row">
+    <span class="meta-item"><span class="dot"></span> パブリックベータ: 2026年6月2日</span>
+    <span class="meta-item"><span class="dot" style="background:#7c4dff"></span> 要件: Live 12 Suite 12.4.5+</span>
+    <span class="meta-item"><span class="dot" style="background:#00e5ff"></span> 言語: JavaScript / TypeScript</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ======= TOC ======= -->
+  <section id="toc" style="padding: 40px 0 0;">
+    <div class="toc">
+      <div class="toc-title">目次</div>
+      <ol>
+        <li><a href="#overview">SDKとは何か — 概要</a></li>
+        <li><a href="#tech">技術仕様・アーキテクチャ</a></li>
+        <li><a href="#can">できること・できないこと</a></li>
+        <li><a href="#vs-mfl">Max for Live との比較</a></li>
+        <li><a href="#community">公式コミュニティ事例</a></li>
+        <li><a href="#ideas">活用アイデア集（オリジナル提案）</a></li>
+        <li><a href="#timeline">リリースタイムライン</a></li>
+        <li><a href="#sources">参考ソース</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ======= OVERVIEW ======= -->
+  <section id="overview">
+    <div class="section-label">01 — Overview</div>
+    <h2>SDKとは何か</h2>
+
+    <div class="quote-block">
+      "Extensions are optional add-on tools that run alongside Live and can be accessed with a right-click from anywhere in your Set."
+      <cite>— Ableton 公式ブログ（2026-06-02）</cite>
+    </div>
+
+    <p>
+      <strong>Ableton Live Extensions SDK</strong> は、2026年6月2日にパブリックベータとして公開された
+      <strong>無償・オープンな JavaScript ツールキット</strong>です。
+      これにより、ユーザーは Live 12 Suite 内で動作するカスタムツール（Extensions）を
+      JavaScript / TypeScript で自作し、セッション内のトラック・クリップ・パラメータ・オートメーションなどを
+      自由に読み書きできるようになります。
+    </p>
+    <p>
+      Extensions は <strong>Live のコンテキストメニュー（右クリック）</strong> から起動し、
+      関連するセット構造に直接アクセスします。
+      Max for Live が「デバイスチェーン上のリアルタイム処理」に強いのに対し、
+      Extensions は「セット全体の構造操作・ワークフロー自動化・外部サービス連携」を担う
+      <strong>別レイヤーの拡張機構</strong>です。
+    </p>
+    <p>
+      Ableton は「AI コーディングアシスタントが SDK の基礎技術（Web 標準）を熟知しているため、
+      コーディング経験がなくてもアイデアを明確に説明できれば Extension が作れる」と明言しており、
+      <strong>AI × 音楽制作</strong> の最前線に位置する取り組みです。
+    </p>
+
+    <div class="card-grid card-grid-3" style="margin-top:24px;">
+      <div class="card">
+        <span class="card-icon">🔓</span>
+        <h3>完全オープン・無償</h3>
+        <p>SDKは無料。Live 12 Suite のライセンスがあればベータ版で今すぐ使える。</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🖱️</span>
+        <h3>右クリックから呼び出す</h3>
+        <p>セット内どこからでもコンテキストメニュー経由で Extension を起動。自然な UX。</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🤖</span>
+        <h3>AI で作れる</h3>
+        <p>Web 標準ベースなので Claude・Copilot 等の AI アシストが効き、非エンジニアでも参入可能。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= TECH ======= -->
+  <section id="tech">
+    <div class="section-label">02 — Technical Spec</div>
+    <h2>技術仕様・アーキテクチャ</h2>
+
+    <div class="info-block">
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>詳細</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>開発言語</td>
+            <td>
+              <span class="tag tag-orange">JavaScript</span>
+              <span class="tag tag-orange">TypeScript</span>
+            </td>
+          </tr>
+          <tr>
+            <td>ランタイム</td>
+            <td><span class="tag tag-cyan">Node.js v24.16.0 (LTS)</span></td>
+          </tr>
+          <tr>
+            <td>対応 Live バージョン</td>
+            <td>Live 12 Suite 12.4.5 Beta 以降（Standard / Intro / Lite は非対応）</td>
+          </tr>
+          <tr>
+            <td>エントリーポイント</td>
+            <td>右クリックコンテキストメニュー</td>
+          </tr>
+          <tr>
+            <td>UI</td>
+            <td>モーダルダイアログ・WebView（カスタム UI 構築可）</td>
+          </tr>
+          <tr>
+            <td>パッケージ管理</td>
+            <td>npm（Node.js エコシステムそのまま利用可）</td>
+          </tr>
+          <tr>
+            <td>開発環境</td>
+            <td>VS Code 推奨（Live の SDK フォルダを直接開いて編集）</td>
+          </tr>
+          <tr>
+            <td>ドキュメント</td>
+            <td><a href="https://ableton.github.io/extensions-sdk/" style="color:var(--accent3)">ableton.github.io/extensions-sdk</a></td>
+          </tr>
+          <tr>
+            <td>価格</td>
+            <td>SDK 無料。Live 12 Suite ライセンスが必要。</td>
+          </tr>
+          <tr>
+            <td>コミュニティ</td>
+            <td>Ableton Discord（Extensions 専用チャンネル）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:32px; margin-bottom:12px;">操作できる Live の要素</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px;">
+      <span class="tag tag-orange">トラック</span>
+      <span class="tag tag-orange">クリップ</span>
+      <span class="tag tag-orange">MIDI ノート</span>
+      <span class="tag tag-orange">デバイス / パラメータ</span>
+      <span class="tag tag-orange">オートメーション</span>
+      <span class="tag tag-orange">テンポ</span>
+      <span class="tag tag-orange">セット構造</span>
+      <span class="tag tag-orange">トラック名 / カラー</span>
+      <span class="tag tag-gray">外部サービス連携（HTTP等）</span>
+    </div>
+
+    <div class="info-block">
+      <h3 style="margin-bottom:10px;">アーキテクチャの概念図</h3>
+      <pre style="color:var(--text-muted); font-size:13px; overflow-x:auto; font-family:monospace; line-height:1.9;">
+┌──────────────────────────────────────────────────┐
+│              Ableton Live 12 Suite               │
+│                                                  │
+│  ┌─────────────────────────────────────────────┐ │
+│  │   Live Set（トラック / クリップ / デバイス）│ │
+│  └────────────────────┬────────────────────────┘ │
+│                       │ JS API（読み書き）         │
+│  ┌────────────────────▼────────────────────────┐ │
+│  │         Extensions SDK (Node.js)            │ │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │ │
+│  │  │ Extension│  │ Extension│  │ Extension│  │ │
+│  │  │   (TS)   │  │   (JS)   │  │  + UI    │  │ │
+│  │  └──────────┘  └──────────┘  └──────────┘  │ │
+│  └────────────────────┬────────────────────────┘ │
+│                       │ HTTP / WebSocket          │
+└───────────────────────┼──────────────────────────┘
+                        ▼
+              外部サービス / AI API / データベース
+      </pre>
+    </div>
+  </section>
+
+  <!-- ======= CAN / CANNOT ======= -->
+  <section id="can">
+    <div class="section-label">03 — Capabilities</div>
+    <h2>できること・できないこと</h2>
+
+    <div class="can-grid">
+      <div class="info-block">
+        <h3 style="color:var(--accent4); margin-bottom:16px;">✅ できること</h3>
+        <ul class="can-list">
+          <li><span class="icon-yes">✓</span>セット構造の読み取り・書き換え（トラック・クリップ・パラメータ）</li>
+          <li><span class="icon-yes">✓</span>MIDI ノートの生成・変換・編集</li>
+          <li><span class="icon-yes">✓</span>トラック名・カラーのバッチ操作</li>
+          <li><span class="icon-yes">✓</span>オートメーションの読み書き</li>
+          <li><span class="icon-yes">✓</span>外部サービス（HTTP / API）への接続</li>
+          <li><span class="icon-yes">✓</span>カスタム UI（WebView・モーダル）の構築</li>
+          <li><span class="icon-yes">✓</span>npm パッケージの活用（任意のJSライブラリ）</li>
+          <li><span class="icon-yes">✓</span>セッション分析・可視化・整理の自動化</li>
+          <li><span class="icon-yes">✓</span>テンポ・タイム署名の操作</li>
+          <li><span class="icon-yes">✓</span>アイデア生成・ランダム変換ツール</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <h3 style="color:#ff7070; margin-bottom:16px;">✗ できないこと</h3>
+        <ul class="cannot-list">
+          <li><span class="icon-no">✗</span>リアルタイムオーディオ処理（エフェクト・合成・フィルター）</li>
+          <li><span class="icon-no">✗</span>リアルタイム MIDI モニタリング（演奏中の変換）</li>
+          <li><span class="icon-no">✗</span>シンセ・サンプラー・オーディオエフェクトの開発</li>
+          <li><span class="icon-no">✗</span>再生・録音中のバックグラウンド処理</li>
+          <li><span class="icon-no">✗</span>サンプル精度・イベント精度のタイミング処理</li>
+          <li><span class="icon-no">✗</span>デバイスチェーン上への組み込み</li>
+          <li><span class="icon-no">✗</span>Live Standard / Intro / Lite での使用</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote-block" style="margin-top:24px;">
+      Extensions は「リアルタイム処理」ではなく「構造・データ・ワークフロー」の層を担う。
+      リアルタイム処理が必要なら Max for Live、構造操作・自動化なら Extensions — という棲み分け。
+    </div>
+  </section>
+
+  <!-- ======= vs MFL ======= -->
+  <section id="vs-mfl">
+    <div class="section-label">04 — Comparison</div>
+    <h2>Extensions vs Max for Live</h2>
+
+    <div class="info-block" style="padding:0; overflow:hidden;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>観点</th>
+            <th>Extensions SDK</th>
+            <th>Max for Live</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>開発言語</td>
+            <td>JavaScript / TypeScript（Web標準）</td>
+            <td>Max パッチ（ビジュアルプログラミング）</td>
+          </tr>
+          <tr>
+            <td>リアルタイム処理</td>
+            <td><span class="cross">✗ 不可</span></td>
+            <td><span class="check">✓ 可（サンプル精度）</span></td>
+          </tr>
+          <tr>
+            <td>セット全体の構造操作</td>
+            <td><span class="check">✓ 強力な API</span></td>
+            <td><span class="partial">△ 限定的</span></td>
+          </tr>
+          <tr>
+            <td>コンテキストメニュー統合</td>
+            <td><span class="check">✓ ネイティブ</span></td>
+            <td><span class="cross">✗ なし</span></td>
+          </tr>
+          <tr>
+            <td>カスタム UI（WebView）</td>
+            <td><span class="check">✓ HTML/CSS/JS</span></td>
+            <td><span class="partial">△ Max UI のみ</span></td>
+          </tr>
+          <tr>
+            <td>AI コーディングアシスト相性</td>
+            <td><span class="check">✓ 非常に良い（Web標準）</span></td>
+            <td><span class="partial">△ やや限定的</span></td>
+          </tr>
+          <tr>
+            <td>外部サービス連携</td>
+            <td><span class="check">✓ npm フルアクセス</span></td>
+            <td><span class="partial">△ 可能だが複雑</span></td>
+          </tr>
+          <tr>
+            <td>コスト</td>
+            <td>無料（SDK のみ）</td>
+            <td>Cycling '74 ライセンス（Suite に同梱）</td>
+          </tr>
+          <tr>
+            <td>学習コスト</td>
+            <td>Web 開発知識があれば低い</td>
+            <td>Max 独自の概念習得が必要</td>
+          </tr>
+          <tr>
+            <td>デバイスチェーンへの組み込み</td>
+            <td><span class="cross">✗ 不可</span></td>
+            <td><span class="check">✓ 可</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ======= COMMUNITY EXAMPLES ======= -->
+  <section id="community">
+    <div class="section-label">05 — Community</div>
+    <h2>公式コミュニティ事例（初期リリース作品）</h2>
+    <p>Ableton が Explore セクションで紹介している最初期の Extensions 作品。</p>
+
+    <div class="example-grid" style="margin-top:24px;">
+      <div class="example-card">
+        <span style="font-size:24px;">📷</span>
+        <h3 style="margin-top:10px;">Photo MIDI</h3>
+        <p class="idea-desc">画像を読み込み、ピクセルデータをMIDIノートに変換して出力。ビジュアルからメロディを生成。</p>
+        <div class="example-card author">by Tom Cameron</div>
+      </div>
+      <div class="example-card">
+        <span style="font-size:24px;">🎲</span>
+        <h3 style="margin-top:10px;">RNMR</h3>
+        <p class="idea-desc">トラック名・内容・長さを分析して自動でクリップ名を付ける。「サイコロ」モードでランダム命名も。</p>
+        <div class="example-card author">by Stéphane Roulliere</div>
+      </div>
+      <div class="example-card">
+        <span style="font-size:24px;">🌫️</span>
+        <h3 style="margin-top:10px;">PaulStretch for Live</h3>
+        <p class="idea-desc">極限タイムストレッチで1フレーズからアンビエントサウンドスケープを生成。PaulStretch OSS ベース。</p>
+        <div class="example-card author">by Oli Larkin</div>
+      </div>
+      <div class="example-card">
+        <span style="font-size:24px;">🐦</span>
+        <h3 style="margin-top:10px;">Bird Game</h3>
+        <p class="idea-desc">鳥が羽ばたくゲームに連動して MIDI ノートを生成。音楽制作をゲーム化。</p>
+        <div class="example-card author">by Federico Pepe</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= IDEAS ======= -->
+  <section id="ideas">
+    <div class="section-label">06 — Ideas</div>
+    <h2>活用アイデア集（オリジナル提案）</h2>
+    <p>Extensions SDK でできることを最大化する、思いつく限りのアイデア。難易度バーは目安（実装者のJS習熟度による）。</p>
+
+    <!-- ---- CATEGORY 1: Workflow Automation ---- -->
+    <div class="idea-section" style="margin-top:40px;">
+      <div class="idea-category-title">
+        <span class="cat-icon">⚙️</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">ワークフロー自動化 / セッション管理</div>
+          <div class="cat-label">繰り返し作業を一発で片付ける</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🗂️ Smart Session Organizer</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">実用</span>
+            <span class="tag tag-gray">初級</span>
+          </div>
+        </div>
+        <div class="idea-desc">右クリックひとつで、トラック種別（Audio/MIDI/Return/Master）を自動判定し、カラーコーディングと名前フォーマット統一を実行。「drums_」「bass_」「synth_」などのプレフィックスを自動付与するルールも設定可能。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📦 Session Snapshot & Diff</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">実用</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">セットの「スナップショット（トラック構成・デバイス・パラメータ値）」を JSON として保存し、後から diff で変化を確認。セッション versioning を Live ネイティブに実現。</div>
+        <div class="idea-detail">活用場面: 大幅に試した後で「さっきの状態に戻したい」ときや、コラボ作業での変更確認。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎛️ Batch Parameter Reset / Copy</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">実用</span>
+            <span class="tag tag-gray">初級</span>
+          </div>
+        </div>
+        <div class="idea-desc">選択した複数トラックの特定デバイスパラメータを一括リセット、または別トラックのパラメータをコピペ。例: 全 EQ Eight の High gain を同じ値に揃える。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🔁 Loop Region Automator</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">実用</span>
+            <span class="tag tag-gray">初級</span>
+          </div>
+        </div>
+        <div class="idea-desc">アレンジビューで指定したクリップの長さを自動検出し、ループ範囲をジャストで設定。「この曲のサビ部分をループして聞く」操作を一発化。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📊 Session Complexity Analyzer</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">分析</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">セット内のトラック数・クリップ数・デバイス数・オートメーション密度を集計し、WebView ダッシュボードで可視化。「重いセッションの原因」を素早く特定できる。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ---- CATEGORY 2: MIDI Creative ---- -->
+    <div class="idea-section">
+      <div class="idea-category-title">
+        <span class="cat-icon">🎹</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">MIDI 創作ツール / ジェネレーター</div>
+          <div class="cat-label">アイデアを展開・変形・発想する</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎲 Harmonic Transformer</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">創作</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">選択した MIDI クリップを指定のスケール・モードに「変換」する。例: C メジャーのフレーズを D ドリアンに移調・音域再配置。「曲のムードを変えたい」ときに即効。</div>
+        <div class="idea-detail">スケール変換ロジックは Tonal.js（npm）で実装可能。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎵 Rhythm Mutator</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">創作</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">MIDI クリップのリズムパターンを「揺らす」「タイトにする」「オフグリッドに」などのモードで変形。ヒューマナイズとは別の、意図的なグルーヴ編集。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🪄 Chord Suggester</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">創作</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">選択したメロディクリップを解析してスケールを推定し、コードトラックに「相性の良いコード進行候補」を何パターか生成・挿入。楽曲制作の壁打ち相手として。</div>
+        <div class="idea-detail">Tonal.js + Chord.js で実装。音楽理論のエンジン部をライブラリに任せる。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🌀 Polyrhythm Builder</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">創作</span>
+            <span class="tag tag-cyan">ジェネレーティブ</span>
+          </div>
+        </div>
+        <div class="idea-desc">3:4、5:7 など任意のポリリズム比を指定すると、複数トラックに対してその比率で MIDI ノートを自動配置。ジェネレーティブリズムの実験を即座に試せる。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🌱 Euclidean Rhythm Generator</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">創作</span>
+            <span class="tag tag-cyan">ジェネレーティブ</span>
+            <span class="tag tag-gray">初級</span>
+          </div>
+        </div>
+        <div class="idea-desc">ユークリッドリズム（ステップ数・ヒット数を指定）を計算し、選択トラックの MIDI クリップに書き込む。Euclidean パターンはドラムプログラミングの王道アルゴリズム。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ---- CATEGORY 3: AI Integration ---- -->
+    <div class="idea-section">
+      <div class="idea-category-title">
+        <span class="cat-icon">🤖</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">AI / 外部サービス連携</div>
+          <div class="cat-label">Live を外の世界につなぐ</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🧠 Claude × Live — AI Arrangement Advisor</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">AI</span>
+            <span class="tag tag-orange">上級</span>
+          </div>
+        </div>
+        <div class="idea-desc">セット構造（トラック名・クリップ名・長さ・デバイス構成）を JSON で Claude API に送信し、「この曲のアレンジで改善できる点」「次に入れるべき要素」のアドバイスを受け取る。制作の壁打ち AI。</div>
+        <div class="idea-detail">Extension → Claude API (HTTP) → モーダルダイアログに結果表示、という流れで実装可能。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📝 AI Clip Namer</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">AI</span>
+            <span class="tag tag-green">実用</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">選択クリップの MIDI ノート構成・ベロシティ・リズムパターンを特徴抽出し、AI にクリップ名の候補を生成させる。「untitled_3」が意味のある名前に変わる。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🌐 Spotify BPM/Key Sync</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">外部連携</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">参考楽曲の Spotify URL を入力すると、Spotify Web API から BPM・キー・エネルギーを取得し、Live のテンポ・スケール情報としてセットに反映。リファレンスに合わせる手間を自動化。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📤 LoopHub / Sample Exporter</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">外部連携</span>
+            <span class="tag tag-orange">上級</span>
+          </div>
+        </div>
+        <div class="idea-desc">選択クリップを命名・タグ付けして外部サービス（Looperman, Splice, 独自ストレージ）に一発アップロード。Extension がクリップメタデータを整理 → API でアップロードまでワンクリックに。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">💬 Discord Session Logger</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">外部連携</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">「制作セッションを終了」すると、セット情報（BPM・トラック数・制作時間・クリップ名リスト）を Discord のウェブフックに投稿。制作日誌をほぼゼロ手間で残せる。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ---- CATEGORY 4: Sound Design / Generative ---- -->
+    <div class="idea-section">
+      <div class="idea-category-title">
+        <span class="cat-icon">🎨</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">ジェネレーティブ / サウンドデザイン補助</div>
+          <div class="cat-label">ランダム性と確率でアイデアを広げる</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎰 Probability Arranger</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">ジェネレーティブ</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">アレンジビューで各クリップに「出現確率 (%)」を設定し、Extension がその確率に基づいてクリップの配置を自動生成する。毎回異なるアレンジのバリエーションを素早く試せる。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🌡️ Tension Mapper</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">ジェネレーティブ</span>
+            <span class="tag tag-purple">創作</span>
+          </div>
+        </div>
+        <div class="idea-desc">「緊張感カーブ」をグラフで描くと、それに沿ってオートメーションを自動生成（フィルターカットオフ・リバーブ量・テンポ変動など）。感情的なダイナミクスを設計図から作る。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📐 Fibonacci / Golden Ratio Placer</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">ジェネレーティブ</span>
+            <span class="tag tag-gray">初級</span>
+          </div>
+        </div>
+        <div class="idea-desc">フィボナッチ数列や黄金比に従って MIDI ノートの配置タイミングを決定。数学的に美しいリズムパターンを生成する実験的ツール。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎭 Emotion-to-MIDI Translator</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">創作</span>
+            <span class="tag tag-purple">AI</span>
+            <span class="tag tag-orange">上級</span>
+          </div>
+        </div>
+        <div class="idea-desc">「悲しい」「ユーフォリック」「不安」などのキーワードを入力すると、音楽心理学的なルールに基づいてスケール・テンポ・ベロシティレンジ・音域を設定し MIDI フレーズを生成。</div>
+        <div class="idea-detail">感情→音楽マッピングの研究データを学習させた LLM と連携するのが理想的な実装。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ---- CATEGORY 5: Live Performance ---- -->
+    <div class="idea-section">
+      <div class="idea-category-title">
+        <span class="cat-icon">🎤</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">ライブパフォーマンス / コラボ</div>
+          <div class="cat-label">ステージと制作をつなぐ</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📡 OSC Bridge</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">外部連携</span>
+            <span class="tag tag-orange">上級</span>
+          </div>
+        </div>
+        <div class="idea-desc">TouchOSC や外部コントローラーから OSC メッセージを受け取り、Live のパラメータに橋渡しする双方向ブリッジ。Extensions SDK の HTTP 機能と WebSocket を組み合わせて実現。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🤝 Collab Set Merger</div>
+          <div class="idea-tags">
+            <span class="tag tag-cyan">コラボ</span>
+            <span class="tag tag-orange">上級</span>
+          </div>
+        </div>
+        <div class="idea-desc">2人以上が別々に作業したセットを「マージ」する。トラック名の衝突検出・カラー再割り当て・クリップ位置の整合を自動化。リモートコラボの後処理を劇的に短縮。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🕐 Setlist Timer</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">実用</span>
+            <span class="tag tag-gray">初級</span>
+          </div>
+        </div>
+        <div class="idea-desc">ライブセットのシーン一覧を取得し、BPM と長さから各曲の演奏時間を計算。セットリスト全体のトータル時間を算出し、「持ち時間 30分に合わせる」調整を支援。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ---- CATEGORY 6: Education / Accessibility ---- -->
+    <div class="idea-section">
+      <div class="idea-category-title">
+        <span class="cat-icon">📚</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">教育 / アクセシビリティ</div>
+          <div class="cat-label">音楽制作の入口を広げる</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎓 Music Theory Tutor</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">教育</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">選択 MIDI クリップを解析し「このコードは Cmaj7」「この進行は II-V-I」と理論的に解説。WebView UI で視覚的なピアノロール解説も表示。音楽理論の学習補助ツール。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">♿ Accessibility Helper</div>
+          <div class="idea-tags">
+            <span class="tag tag-purple">教育</span>
+            <span class="tag tag-green">社会的価値</span>
+          </div>
+        </div>
+        <div class="idea-desc">色覚特性ユーザー向けに、Live のトラックカラーを識別しやすいパレットに一括変換。視認性の高いカラースキームを複数プリセットで提供。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ---- CATEGORY 7: Industry-specific (Audio gear company) ---- -->
+    <div class="idea-section">
+      <div class="idea-category-title">
+        <span class="cat-icon">🎚️</span>
+        <div>
+          <div style="font-size:17px; font-weight:700;">音響機器メーカー視点のビジネス活用</div>
+          <div class="cat-label">製品デモ・エンジニアリング・マーケティングへの応用</div>
+        </div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎛️ 製品デモ自動セットアップ</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">ビジネス</span>
+            <span class="tag tag-orange">中級</span>
+          </div>
+        </div>
+        <div class="idea-desc">展示会・デモで「製品の特長を最大限に引き出すセット」をワンクリックで構築する Extension。トラック構成・デバイス配置・パラメータ初期値を定義したテンプレートを配布し、誰でも同じデモを再現できる。</div>
+        <div class="idea-detail">活用場面: NAMM や Music China でのスタッフデモ、販売店への技術サポート資料。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">📋 Firmware Change Validator</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">ビジネス</span>
+            <span class="tag tag-cyan">QA</span>
+            <span class="tag tag-orange">上級</span>
+          </div>
+        </div>
+        <div class="idea-desc">MIDI コントローラーや録音機のファームウェアアップデート後、Live との接続性を自動テストする Extension。MIDI メッセージの送受信・パラメータマッピングを確認し、レポートを出力。開発QAの効率化。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div></div></div>
+      </div>
+
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">🎬 Product Tutorial Content Generator</div>
+          <div class="idea-tags">
+            <span class="tag tag-green">ビジネス</span>
+            <span class="tag tag-purple">マーケティング</span>
+          </div>
+        </div>
+        <div class="idea-desc">自社製品を使ったデモセッションを分析し、「何をどの順番で操作したか」のログを生成。これをチュートリアル動画のスクリプトや、マニュアル執筆の素材として活用。</div>
+        <div class="difficulty-bar">難易度 <div class="bars"><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar filled-orange"></div><div class="bar"></div><div class="bar"></div></div></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ======= TIMELINE ======= -->
+  <section id="timeline">
+    <div class="section-label">07 — Timeline</div>
+    <h2>リリースタイムライン</h2>
+
+    <div class="timeline" style="margin-top:24px;">
+      <div class="timeline-item">
+        <div class="timeline-date">2026-06-02</div>
+        <div class="timeline-title">Extensions SDK パブリックベータ公開</div>
+        <div class="timeline-body">Live 12.4.5 Beta と同時。Centercode 経由で Live 12 Suite ユーザーが参加可能に。初期サンプル Extension も同時公開。</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2026-06-02</div>
+        <div class="timeline-title">Ableton Discord に Extensions 専用チャンネル開設</div>
+        <div class="timeline-body">コミュニティによる Extension の共有・コラボレーション空間が立ち上がる。</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">近日</div>
+        <div class="timeline-title">正式リリース（時期未定）</div>
+        <div class="timeline-body">Ableton はコミュニティフィードバックと実世界での使用を経て正式版に移行予定と発表。ベータ期間中に API や機能が拡充される見込み。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= SOURCES ======= -->
+  <section id="sources">
+    <div class="section-label">08 — Sources</div>
+    <h2>参考ソース</h2>
+    <ul class="source-list">
+      <li><a href="https://www.ableton.com/en/blog/introducing-extensions-sdk/">Ableton 公式ブログ — Introducing Extensions SDK</a></li>
+      <li><a href="https://www.ableton.com/en/live/extensions">Ableton — Extensions SDK 公式ページ</a></li>
+      <li><a href="https://ableton.github.io/extensions-sdk/">Ableton Extensions SDK 公式ドキュメント（GitHub Pages）</a></li>
+      <li><a href="https://help.ableton.com/hc/en-us/articles/27303428331420-Ableton-Extensions-FAQ">Ableton Extensions FAQ</a></li>
+      <li><a href="https://cdm.link/ableton-extensions-beta/">CDM Create Digital Music — Ableton Extensions will let you code your own tools</a></li>
+      <li><a href="https://www.musicradar.com/music-tech/after-seeing-it-in-action-im-convinced-that-abletons-extensions-is-going-to-change-how-music-makers-use-live-forever">MusicRadar — After seeing them in action…</a></li>
+      <li><a href="https://www.attackmagazine.com/news/ableton-extensions-sdk-turns-live-suite-into-an-experimental-development-platform/">Attack Magazine — Extensions SDK Turns Live Suite Into An Experimental Development Platform</a></li>
+      <li><a href="https://sonicstate.com/news/2026/06/02/ableton-opens-up-java-extensions-sdk-">Sonic State — Ableton Opens Up Live Extensions With Java SDK</a></li>
+      <li><a href="https://synthanatomy.com/2026/06/ableton-extensions-sdk-you-can-now-code-in-ableton-live-features-youre-missing.html">Synth Anatomy — You can now code in Ableton Live features you're missing</a></li>
+      <li><a href="https://www.soundonsound.com/news/ableton-announce-extensions-sdk">Sound On Sound — Ableton announce Extensions SDK</a></li>
+    </ul>
+  </section>
+
+</div>
+
+<!-- ======= FOOTER ======= -->
+<footer>
+  <p>
+    Generated by Alice (Claude Code) — 2026-06-03 |
+    Workspace: <code>04-output/Technology Department/knowledge/</code> |
+    Sources: Ableton official + community coverage
+  </p>
+</footer>
+
+</body>
+</html>
