@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kamui Code MCP ツールカタログ解説 — 概要と PROS / CONS</title>
+<style>
+  :root {
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink-1: #0b0b0b;
+    --ink-2: #52514e;
+    --ink-3: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --good: #0ca30c;
+    --good-text: #006300;
+    --critical: #d03b3b;
+    --unrated: #c3c2b7;
+    --star-1: #86b6ef;
+    --star-2: #5598e7;
+    --star-3: #2a78d6;
+    --star-4: #1c5cab;
+    --star-5: #0d366b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink-1: #ffffff;
+      --ink-2: #c3c2b7;
+      --ink-3: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --good-text: #0ca30c;
+      --unrated: #52514e;
+      --star-1: #184f95;
+      --star-2: #256abf;
+      --star-3: #3987e5;
+      --star-4: #6da7ec;
+      --star-5: #9ec5f4;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+    background: var(--page);
+    color: var(--ink-1);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px 80px; }
+  header.hero { margin-bottom: 36px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  h1 { font-size: 26px; line-height: 1.4; margin-bottom: 10px; }
+  .lede { color: var(--ink-2); max-width: 760px; }
+  h2 { font-size: 19px; margin: 48px 0 16px; padding-top: 20px; border-top: 1px solid var(--grid); }
+  h3 { font-size: 15px; margin: 24px 0 8px; }
+  p { margin-bottom: 12px; color: var(--ink-2); }
+  p strong, li strong { color: var(--ink-1); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
+  /* KPI row */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 24px 0 8px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .kpi .v { font-size: 30px; font-weight: 700; line-height: 1.2; }
+  .kpi .l { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; }
+  .kpi .s { font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+
+  /* chart card */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin: 16px 0; }
+  .card .title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .card .sub { font-size: 12.5px; color: var(--ink-3); margin-bottom: 14px; }
+
+  /* bar rows */
+  .barrow { display: grid; grid-template-columns: 190px 1fr 52px; align-items: center; gap: 10px; padding: 4px 0; border-radius: 6px; }
+  .barrow:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  .barrow .name { font-size: 13px; color: var(--ink-2); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barrow .track { height: 16px; position: relative; }
+  .barrow .bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .barrow .val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink-1); }
+  .axis-note { font-size: 11.5px; color: var(--ink-3); margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--grid); }
+
+  /* star chart rows */
+  .starrow .name { font-size: 13px; }
+  .b-u  { background: var(--unrated) !important; }
+  .b-s1 { background: var(--star-1) !important; }
+  .b-s2 { background: var(--star-2) !important; }
+  .b-s3 { background: var(--star-3) !important; }
+  .b-s4 { background: var(--star-4) !important; }
+  .b-s5 { background: var(--star-5) !important; }
+
+  /* tables */
+  .tablewrap { overflow-x: auto; margin: 14px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  th { text-align: left; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-3); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--grid); vertical-align: top; color: var(--ink-2); }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--ink-1); font-weight: 600; white-space: nowrap; }
+  td code { white-space: nowrap; }
+  .stars { color: var(--accent); letter-spacing: 1px; white-space: nowrap; }
+
+  /* pros / cons */
+  .pcgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 720px) { .pcgrid { grid-template-columns: 1fr; } .barrow { grid-template-columns: 120px 1fr 48px; } }
+  .pc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .pc h3 { margin: 0 0 12px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .pc.pros h3 { color: var(--good-text); }
+  .pc.cons h3 { color: var(--critical); }
+  .pc ul { list-style: none; }
+  .pc li { padding: 8px 0; border-top: 1px solid var(--grid); font-size: 13.5px; color: var(--ink-2); }
+  .pc li:first-child { border-top: none; padding-top: 0; }
+  .pc li b { display: block; color: var(--ink-1); font-size: 13.5px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 99px; padding: 1px 9px; vertical-align: middle; }
+  .badge.g { color: var(--good-text); border: 1px solid var(--good-text); }
+  .badge.r { color: var(--critical); border: 1px solid var(--critical); }
+
+  ul.plain { margin: 0 0 14px 1.3em; color: var(--ink-2); }
+  ul.plain li { margin-bottom: 6px; }
+
+  .note { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 13.5px; color: var(--ink-2); margin: 16px 0; }
+  footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--grid); font-size: 12px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">MCP Tool Catalog Review · 2026-07-12</div>
+  <h1>Kamui Code MCP ツールカタログ解説 — 概要と PROS / CONS</h1>
+  <p class="lede">設定ファイル <code>mcp-kamui-code (1).json</code>（541 サーバー定義）を全件解析した結果。Kamui Code は <code>kamui-code.ai</code> をゲートウェイとして、fal.ai・Google・Replicate・xAI など各社の生成 AI モデルを <strong>HTTP 型 MCP サーバー</strong>として提供するサービスで、このファイルはその「品揃えカタログ」に相当する。</p>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">541</div><div class="l">MCP サーバー定義数</div><div class="s">すべて type: http</div></div>
+  <div class="kpi"><div class="v">16</div><div class="l">機能カテゴリ（大分類）</div><div class="s">画像・動画・音声・3D・学習</div></div>
+  <div class="kpi"><div class="v">6</div><div class="l">最高評価 ★5 のツール</div><div class="s">Veo 3.1 系 4 件 + GPT Image 1 Mini 2 件</div></div>
+  <div class="kpi"><div class="v">1</div><div class="l">認証キー</div><div class="s">全サーバー共通 KAMUI-CODE-PASS</div></div>
+</div>
+
+<h2>1. 概要 — このファイルは何か</h2>
+<p>541 個のエントリはすべて同じ構造で、<strong>「1 サーバー = 1 モデル（または 1 機能）」</strong>の対応になっている。</p>
+<ul class="plain">
+  <li><strong>接続方式</strong>：全件 <code>type: http</code>。エンドポイントは <code>https://kamui-code.ai/…</code> に集約されている（リモート MCP。ローカルにプロセスを立てない）</li>
+  <li><strong>認証</strong>：全件共通のヘッダー <code>KAMUI-CODE-PASS</code> に環境変数 <code>${KAMUI_CODE_PASS_KEY}</code> を渡す方式。キー 1 本で全モデルが使える</li>
+  <li><strong>命名規則</strong>：<code>入出力タイプ-kamui-モデル名</code>。例：<code>t2i</code>（Text→Image）、<code>i2v</code>（Image→Video）、<code>v2v</code>（動画加工）、<code>flf2v</code>（最初と最後のフレーム→動画）、<code>i2i3d</code>（画像→3D）など。名前を見れば用途がわかる</li>
+  <li><strong>⭐マーク</strong>：説明文末尾の星（0〜5 個）は Kamui Code 側が付けた推奨度。モデル選定の実用的なガイドになる</li>
+  <li><strong>収録モデル</strong>：Veo 3.1、Sora 2/Pro、Kling 2.5/2.6/3.0/O1、Seedance 1.x/2.0、Hailuo 2.3、Flux-2（Pro/Max/LoRA）、Qwen Image 2、GPT Image 1.5、Hunyuan3D 3.1、ElevenLabs、MiniMax Speech 2.6、Lyria 3 Pro など、2026 年時点の主要モデルをほぼ網羅</li>
+</ul>
+
+<h2>2. カテゴリ内訳 — 何ができるか</h2>
+<div class="card">
+  <div class="title">カテゴリ別サーバー数（全 541 件）</div>
+  <div class="sub">プレフィックス（入出力タイプ）を 16 の大分類に集約。件数はカタログの層の厚さを示す</div>
+  <div class="barrow"><span class="name">画像編集 (i2i)</span><span class="track"><span class="bar" style="width:100%"></span></span><span class="val">96</span></div>
+  <div class="barrow"><span class="name">画像生成 (t2i)</span><span class="track"><span class="bar" style="width:86.5%"></span></span><span class="val">83</span></div>
+  <div class="barrow"><span class="name">動画加工 (v2v)</span><span class="track"><span class="bar" style="width:77.1%"></span></span><span class="val">74</span></div>
+  <div class="barrow"><span class="name">画像→動画 (i2v)</span><span class="track"><span class="bar" style="width:74.0%"></span></span><span class="val">71</span></div>
+  <div class="barrow"><span class="name">テキスト→動画 (t2v)</span><span class="track"><span class="bar" style="width:66.7%"></span></span><span class="val">64</span></div>
+  <div class="barrow"><span class="name">参照→動画 (r2v)</span><span class="track"><span class="bar" style="width:35.4%"></span></span><span class="val">34</span></div>
+  <div class="barrow"><span class="name">3D生成・処理</span><span class="track"><span class="bar" style="width:30.2%"></span></span><span class="val">29</span></div>
+  <div class="barrow"><span class="name">音声合成・ボイス</span><span class="track"><span class="bar" style="width:16.7%"></span></span><span class="val">16</span></div>
+  <div class="barrow"><span class="name">音声解析・変換</span><span class="track"><span class="bar" style="width:13.5%"></span></span><span class="val">13</span></div>
+  <div class="barrow"><span class="name">アバター・トーキングヘッド</span><span class="track"><span class="bar" style="width:13.5%"></span></span><span class="val">13</span></div>
+  <div class="barrow"><span class="name">音声・SFX生成 (t2a)</span><span class="track"><span class="bar" style="width:10.4%"></span></span><span class="val">10</span></div>
+  <div class="barrow"><span class="name">音楽生成 (t2m)</span><span class="track"><span class="bar" style="width:10.4%"></span></span><span class="val">10</span></div>
+  <div class="barrow"><span class="name">その他（3D補助・図解等）</span><span class="track"><span class="bar" style="width:10.4%"></span></span><span class="val">10</span></div>
+  <div class="barrow"><span class="name">LoRA学習 (train)</span><span class="track"><span class="bar" style="width:6.3%"></span></span><span class="val">6</span></div>
+  <div class="barrow"><span class="name">映像・画像分析</span><span class="track"><span class="bar" style="width:6.3%"></span></span><span class="val">6</span></div>
+  <div class="barrow"><span class="name">フレーム遷移動画</span><span class="track"><span class="bar" style="width:6.3%"></span></span><span class="val">6</span></div>
+  <div class="axis-note">バーの長さ = サーバー数。動画系（v2v + i2v + t2v + r2v + 遷移 = 249 件）と画像系（i2i + t2i = 179 件）で全体の約 8 割を占める。</div>
+</div>
+
+<h3>各カテゴリの中身（代表例）</h3>
+<div class="tablewrap">
+<table>
+  <tr><th>カテゴリ</th><th>できること</th><th>代表モデル</th></tr>
+  <tr><td>画像編集 (i2i)</td><td>プロンプト編集・スタイル変換・アップスケール・アウトペイント</td><td>Flux-2 Max Edit、Qwen Image 2 Edit、Seedream 4.5、GPT Image 1.5 Edit、Nano Banana Edit</td></tr>
+  <tr><td>画像生成 (t2i)</td><td>テキストから画像。写実・イラスト・文字入れ対応</td><td>Flux-2 Max/Pro、Imagen 4、Qwen Image 2512、Kling Image V3、Krea v2</td></tr>
+  <tr><td>動画加工 (v2v)</td><td>リップシンク・背景除去・アップスケール・翻訳・字幕・延長</td><td>Sync Lipsync V2、Topaz、HeyGen 翻訳、Kling O1 編集、自動字幕</td></tr>
+  <tr><td>画像→動画 (i2v)</td><td>静止画をアニメーション化（音声生成つきも多い）</td><td>Veo 3.1、Sora 2 Pro、Kling 2.6/V3 Pro、Seedance 2.0、Hailuo 2.3</td></tr>
+  <tr><td>テキスト→動画 (t2v)</td><td>プロンプトのみから動画生成</td><td>Veo 3.1 Fast、Sora 2、Kling 2.5 Turbo Pro、LTX-2、Hunyuan 1.5</td></tr>
+  <tr><td>参照→動画 (r2v)</td><td>参照画像でキャラ・スタイル一貫性を保った動画</td><td>Veo 3.1 R2V、Kling O1、Seedance 2.0 Reference、Vidu Q2</td></tr>
+  <tr><td>3D 生成・処理</td><td>画像/テキスト→3D モデル、リギング、リメッシュ</td><td>Hunyuan3D 3.1 Pro、Meshy V6、Rodin 2.5、Tripo3D、SAM-3 3D</td></tr>
+  <tr><td>音声・音楽</td><td>TTS・ボイスクローン・SFX・作曲・文字起こし</td><td>MiniMax Speech 2.6、ElevenLabs、Stable Audio 2.5、Lyria 3 Pro、Beatoven</td></tr>
+  <tr><td>LoRA 学習 (train)</td><td>自前データで Flux-2 / Qwen Edit の LoRA を訓練</td><td>Flux-2 Trainer、Qwen Image Edit Plus Trainer</td></tr>
+  <tr><td>分析</td><td>動画・画像・音声の内容理解と QA</td><td>Gemini Video Analysis、Audio Understanding、Nemotron VLM</td></tr>
+</table>
+</div>
+
+<h2>3. 推奨度（⭐）の分布 — どれを選ぶべきか</h2>
+<div class="card">
+  <div class="title">星評価の分布（説明文末尾の ⭐ 数を集計）</div>
+  <div class="sub">濃い青ほど高評価。★3 が「標準」、★4〜5 が「まず選ぶべき」層</div>
+  <div class="barrow starrow"><span class="name">評価なし</span><span class="track"><span class="bar b-u" style="width:11.6%"></span></span><span class="val">39</span></div>
+  <div class="barrow starrow"><span class="name">★</span><span class="track"><span class="bar b-s1" style="width:23.7%"></span></span><span class="val">80</span></div>
+  <div class="barrow starrow"><span class="name">★★</span><span class="track"><span class="bar b-s2" style="width:4.5%"></span></span><span class="val">15</span></div>
+  <div class="barrow starrow"><span class="name">★★★</span><span class="track"><span class="bar b-s3" style="width:100%"></span></span><span class="val">337</span></div>
+  <div class="barrow starrow"><span class="name">★★★★</span><span class="track"><span class="bar b-s4" style="width:19.0%"></span></span><span class="val">64</span></div>
+  <div class="barrow starrow"><span class="name">★★★★★</span><span class="track"><span class="bar b-s5" style="width:1.8%"></span></span><span class="val">6</span></div>
+  <div class="axis-note">バーの長さ = サーバー数（グレー = 評価記載なし）。★4 以上は 70 件（約 13%）に絞られており、実用上の選定はここから始めるのが早い。</div>
+</div>
+
+<h3>★5（最高評価）の 6 ツール</h3>
+<div class="tablewrap">
+<table>
+  <tr><th>サーバー名</th><th>用途</th><th>ポイント</th></tr>
+  <tr><td><code>i2v-kamui-veo31</code></td><td>画像→動画</td><td>Google Veo 3.1。1080p・8 秒・音声生成つき。静止画アニメ化の本命</td></tr>
+  <tr><td><code>r2v-kamui-veo31</code></td><td>参照→動画</td><td>参照画像でキャラ一貫性を保った動画生成</td></tr>
+  <tr><td><code>flf2v-kamui-veo31</code></td><td>フレーム遷移</td><td>最初と最後のフレームを指定して間を生成</td></tr>
+  <tr><td><code>flf2v-kamui-veo31-fast</code></td><td>フレーム遷移（高速）</td><td>同上の高速版。4/6/8 秒、コンテンツポリシー自動修正つき</td></tr>
+  <tr><td><code>t2i-kamui-gpt-image-1-mini</code></td><td>画像生成</td><td>OpenAI GPT Image 1 Mini。指示追従に強い</td></tr>
+  <tr><td><code>i2i-kamui-gpt-image-1-mini-edit</code></td><td>画像編集</td><td>同モデルの編集版</td></tr>
+</table>
+</div>
+
+<h3>★4 の注目株（70 件から用途別に抜粋）</h3>
+<div class="tablewrap">
+<table>
+  <tr><th>用途</th><th>代表サーバー</th></tr>
+  <tr><td>動画（最新世代）</td><td>Sora 2 / Sora 2 Pro（t2v・i2v）、Kling 2.6 Pro、Seedance 2.0 系（9 件）、Hailuo 2.3 Pro</td></tr>
+  <tr><td>動画（高速・低コスト）</td><td>LTX-2 / LTX-2 Fast 系、LongCat 480p/720p、Veo 3.1 Fast</td></tr>
+  <tr><td>画像（最高品質）</td><td>Flux-2 Max / Max Edit、GPT Image 1.5 / Edit、Kling Image O3・V3、Krea v2 Large</td></tr>
+  <tr><td>音楽・音声</td><td>Lyria 3 Pro、Beatoven（音楽・SFX）、Audio Understanding（音声内容の QA）</td></tr>
+  <tr><td>動画ユーティリティ</td><td>ByteDance 動画アップスケール、自動字幕（auto-subtitle）</td></tr>
+  <tr><td>3D</td><td>Hyper3D Rodin 2.5（画像→3D / テキスト→3D）</td></tr>
+</table>
+</div>
+
+<h2>4. PROS / CONS</h2>
+<div class="pcgrid">
+  <div class="pc pros">
+    <h3><span class="badge g">PROS</span> 強み</h3>
+    <ul>
+      <li><b>圧倒的な網羅性と鮮度</b>Sora 2、Veo 3.1、Kling 3.0/O1、Seedance 2.0、Flux-2、Hunyuan3D 3.1 など、リリース直後の最新モデルが 541 件分そろう。個別に各社と契約する必要がない</li>
+      <li><b>統一インターフェース</b>全サーバーが同じ HTTP MCP + 共通ヘッダー認証。キー 1 本・書式 1 種類で画像・動画・音声・3D・LoRA 学習まで扱える</li>
+      <li><b>命名規則が自己文書化されている</b><code>t2i / i2v / flf2v</code> のプレフィックスで入出力が即座にわかり、モデル比較・乗り換えが容易。ベンダーロックインが弱い</li>
+      <li><b>星評価つきカタログ</b>541 件から選ぶ際のガイドが組み込まれている。★4 以上の 70 件に絞れば選定コストが大きく下がる</li>
+      <li><b>制作パイプラインが一気通貫</b>LoRA 学習 → 画像生成 → 画像編集 → 動画化 → リップシンク → 字幕 → アップスケールまで、1 つのエコシステム内で完結できる</li>
+      <li><b>詳細なパラメータ記載（一部）</b>新しいエントリは解像度・秒数・上限サイズ・デフォルト値まで description に明記されており、ドキュメントを見ずに呼べる</li>
+    </ul>
+  </div>
+  <div class="pc cons">
+    <h3><span class="badge r">CONS</span> 弱み・注意点</h3>
+    <ul>
+      <li><b>全部入り登録はコンテキストを破壊する</b>541 サーバーをそのまま MCP 登録すると、ツール定義だけで LLM のコンテキストを大量消費し実用にならない。<strong>用途ごとに数個だけ選んで登録する運用が前提</strong>（本 workspace では <code>/mcp-select</code> で選定）</li>
+      <li><b>単一ゲートウェイ依存</b>全 541 件が <code>kamui-code.ai</code> 経由。ここが落ちる・仕様変更する・サービス終了すると全機能が同時に止まる</li>
+      <li><b>キー 1 本の集中リスク</b>1 つのキーで全モデルが呼べる = 漏洩時の影響範囲が最大。環境変数管理の徹底と、キーを書いた設定ファイルの公開リポジトリ混入防止が必須</li>
+      <li><b>コストが見えにくい</b>裏側のモデルごとに課金が異なるのに、MCP 越しには単価が見えない。動画系（特に Pro / Max / 1080p）は高額になりやすく、うっかり連打が怖い</li>
+      <li><b>説明の粒度がバラバラ</b>詳細なエントリと「via Kamui Code ⭐」だけの 1 行エントリが混在。★1 の約 80 件は情報不足のまま選ぶことになる</li>
+      <li><b>新旧バージョンの乱立</b>veo3 / veo31、seedance v1 / v1.5 / v2.0 など類似名が併存し、古い方を誤って選びやすい。星評価と世代名の確認が必要</li>
+      <li><b>生成時間・キュー待ちはモデル依存</b>3D（Meshy は 5〜10 分）や高品質動画は待ち時間が長く、同期的なワークフローに組み込みにくい</li>
+    </ul>
+  </div>
+</div>
+
+<h2>5. 運用の指針（推奨）</h2>
+<ul class="plain">
+  <li><strong>登録は「タスクごとに数個」</strong>：この JSON はカタログとして保管し、実際の <code>.mcp.json</code> にはその日のタスクに必要なサーバーだけ入れる。選定は ★4〜5 から始める</li>
+  <li><strong>デフォルトの推し</strong>：画像→動画は <code>i2v-kamui-veo31</code>（品質）か <code>veo31-fast</code>（速度）、画像生成は <code>flux-2-max</code> か <code>gpt-image-1-mini</code>、画像編集は <code>qwen-image-2-edit</code> か <code>flux-2-max-edit</code>、TTS は <code>minimax-speech-26-hd</code></li>
+  <li><strong>キー管理</strong>：<code>KAMUI_CODE_PASS_KEY</code> は環境変数のみ。この JSON 自体は変数参照なのでそのまま共有可能だが、展開済みの値を含むファイルは絶対に公開しない</li>
+  <li><strong>コスト対策</strong>：高額な動画系はまず Fast / Lite / 480p 版でプロンプトを固めてから、本番だけ Pro / 1080p を叩く二段構えにする</li>
+</ul>
+
+<div class="note">
+  <strong>ひとことで言うと</strong>：Kamui Code は「生成 AI モデルの総合商社」。品揃え・鮮度・使い勝手の統一感は非常に高い。一方で<strong>「全部つなぐ」ものではなく「選んでつなぐ」もの</strong>であり、コンテキスト管理・キー管理・コスト管理の 3 点を自分で握る前提のサービス。
+</div>
+
+<footer>
+  ソース: <code>mcp-kamui-code (1).json</code>（541 エントリ全件を機械集計）· 集計日 2026-07-12 · 星評価は Kamui Code 側の記載をそのまま集計したもので、当方の性能検証結果ではない。
+</footer>
+
+</div>
+</body>
+</html>
